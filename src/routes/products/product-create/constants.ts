@@ -55,9 +55,16 @@ export type ProductCreateOptionSchema = z.infer<
   typeof ProductCreateOptionSchema
 >
 
+const LISTING_TYPES = ["product", "service"] as const
+
 export const ProductCreateSchema = z
   .object({
     title: z.string().min(1),
+    listing_type: z.enum(LISTING_TYPES),
+    request_quote_only: z.boolean().optional(),
+    duration_text: z.string().optional(),
+    price_range_min: z.union([z.number(), z.string()]).optional(),
+    price_range_max: z.union([z.number(), z.string()]).optional(),
     subtitle: z.string().optional(),
     handle: z.string().optional(),
     description: z.string().optional(),
@@ -121,6 +128,11 @@ export const EditProductMediaSchema = z.object({
 export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<
   z.infer<typeof ProductCreateSchema>
 > = {
+  listing_type: "product",
+  request_quote_only: false,
+  duration_text: "",
+  price_range_min: undefined,
+  price_range_max: undefined,
   discountable: true,
   tags: [],
   sales_channels: [],

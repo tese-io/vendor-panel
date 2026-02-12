@@ -47,7 +47,7 @@ export const SwitchBox = <
       render={({ field: { value, onChange, ...field } }) => {
         return (
           <Form.Item>
-            <div className="bg-ui-bg-component shadow-elevation-card-rest flex items-start gap-x-3 rounded-lg p-3">
+            <div className="bg-ui-bg-component shadow-elevation-card-rest flex items-center gap-x-3 rounded-lg p-3">
               <Form.Control>
                 <Switch
                   {...field}
@@ -58,11 +58,11 @@ export const SwitchBox = <
                   }}
                 />
               </Form.Control>
-              <div>
+              <div className="min-w-0 flex-1">
                 <Form.Label optional={optional} tooltip={tooltip}>
                   {label}
                 </Form.Label>
-                <Form.Hint>{description}</Form.Hint>
+                <Form.Hint className="mt-0.5">{description}</Form.Hint>
               </div>
             </div>
             <Form.ErrorMessage />

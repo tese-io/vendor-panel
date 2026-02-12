@@ -106,7 +106,8 @@ export const ProductCreateForm = ({
     }
 
     const media = values.media || []
-    const payload = { ...values, media: undefined }
+    const { listing_type, request_quote_only, duration_text, price_range_min, price_range_max, ...restValues } = values
+    const payload = { ...restValues, media: undefined }
 
     let uploadedMedia: (HttpTypes.AdminFile & {
       isThumbnail: boolean
@@ -156,6 +157,15 @@ export const ProductCreateForm = ({
         height: parseInt(payload.height || "") || undefined,
         width: parseInt(payload.width || "") || undefined,
         type_id: payload.type_id || undefined,
+        metadata: {
+          listing_type: listing_type || "product",
+          ...(listing_type === "service" && {
+            request_quote_only: !!request_quote_only,
+            ...(duration_text?.trim() ? { duration_text: duration_text.trim() } : {}),
+            ...(price_range_min != null && price_range_min !== "" ? { price_range_min: Number(price_range_min) } : {}),
+            ...(price_range_max != null && price_range_max !== "" ? { price_range_max: Number(price_range_max) } : {}),
+          }),
+        },
         tags:
           payload.tags?.map((tag) => ({
             id: tag,

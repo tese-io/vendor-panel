@@ -1,4 +1,4 @@
-import { Button, Input, Text, Textarea, toast } from "@medusajs/ui"
+import { Button, Input, Select, Text, Textarea, toast } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
@@ -15,6 +15,8 @@ import {
   useDashboardExtension,
 } from "../../../../../extensions"
 
+const LISTING_TYPES = ["product", "service"] as const
+
 type EditProductFormProps = {
   product: ExtendedAdminProduct
 }
@@ -24,6 +26,11 @@ const EditProductSchema = zod.object({
   handle: zod.string().min(1),
   description: zod.string().optional(),
   discountable: zod.boolean(),
+  listing_type: zod.enum(LISTING_TYPES),
+  request_quote_only: zod.boolean().optional(),
+  duration_text: zod.string().optional(),
+  price_range_min: zod.union([zod.number(), zod.string()]).optional(),
+  price_range_max: zod.union([zod.number(), zod.string()]).optional(),
 })
 
 export const EditProductForm = ({ product }: EditProductFormProps) => {
@@ -34,12 +41,20 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
   const fields = getFormFields("product", "edit")
   const configs = getFormConfigs("product", "edit")
 
+  const existingMetadata = (product as { metadata?: Record<string, unknown> }).metadata as Record<string, unknown> | undefined
+  const defaultListingType = (existingMetadata?.listing_type as string) === "service" ? "service" : "product"
+
   const form = useExtendableForm({
     defaultValues: {
       title: product.title,
       handle: product.handle || "",
       description: product.description || "",
       discountable: product.discountable,
+      listing_type: defaultListingType,
+      request_quote_only: !!(existingMetadata?.request_quote_only),
+      duration_text: (existingMetadata?.duration_text as string) ?? (existingMetadata?.duration_minutes != null ? `${existingMetadata.duration_minutes} min` : ""),
+      price_range_min: (existingMetadata?.price_range_min as number) ?? "",
+      price_range_max: (existingMetadata?.price_range_max as number) ?? "",
     },
     schema: EditProductSchema,
     configs: configs,
@@ -49,7 +64,7 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
   const { mutateAsync, isPending } = useUpdateProduct(product.id)
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    const { description, discountable, handle, title } = data
+    const { description, discountable, handle, title, listing_type, request_quote_only, duration_text, price_range_min, price_range_max } = data
 
     await mutateAsync(
       {
@@ -57,6 +72,18 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
         discountable,
         handle,
         title,
+        metadata: {
+          ...(typeof existingMetadata === "object" && existingMetadata !== null ? existingMetadata : {}),
+          listing_type,
+          ...(listing_type === "service"
+            ? {
+                request_quote_only: !!request_quote_only,
+                ...(duration_text?.trim() ? { duration_text: duration_text.trim() } : {}),
+                ...(price_range_min != null && price_range_min !== "" ? { price_range_min: Number(price_range_min) } : {}),
+                ...(price_range_max != null && price_range_max !== "" ? { price_range_max: Number(price_range_max) } : {}),
+              }
+            : { request_quote_only: undefined, duration_text: undefined, price_range_min: undefined, price_range_max: undefined }),
+        },
       },
       {
         onSuccess: ({ product }) => {
@@ -83,6 +110,76 @@ export const EditProductForm = ({ product }: EditProductFormProps) => {
         <RouteDrawer.Body className="flex flex-1 flex-col gap-y-8 overflow-y-auto">
           <div className="flex flex-col gap-y-8">
             <div className="flex flex-col gap-y-4">
+              <Form.Field
+                control={form.control}
+                name="listing_type"
+                render={({ field: { onChange, ref, value, ...field } }) => (
+                  <Form.Item>
+                    <Form.Label>{t("products.listingType.label")}</Form.Label>
+                    <Form.Control>
+                      <Select value={value} onValueChange={onChange}>
+                        <Select.Trigger ref={ref}>
+                          <Select.Value />
+                        </Select.Trigger>
+                        <Select.Content>
+                          <Select.Item value="product">{t("products.listingType.product")}</Select.Item>
+                          <Select.Item value="service">{t("products.listingType.service")}</Select.Item>
+                        </Select.Content>
+                      </Select>
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
+              />
+              {form.watch("listing_type") === "service" && (
+                <>
+                  <SwitchBox
+                    control={form.control}
+                    name="request_quote_only"
+                    label={t("products.requestQuoteOnly.label", "Request quote only")}
+                    description={t("products.requestQuoteOnly.description", "Show “Request quote” instead of “Add to cart” on the storefront")}
+                  />
+                  <Form.Field
+                    control={form.control}
+                    name="duration_text"
+                    render={({ field }) => (
+                      <Form.Item>
+                        <Form.Label optional>{t("products.duration.label", "Duration")}</Form.Label>
+                        <Form.Control>
+                          <Input {...field} placeholder={t("products.duration.placeholder", "e.g. 1 hour, 30 min")} />
+                        </Form.Control>
+                        <Form.ErrorMessage />
+                      </Form.Item>
+                    )}
+                  />
+                  <Form.Field
+                    control={form.control}
+                    name="price_range_min"
+                    render={({ field }) => (
+                      <Form.Item>
+                        <Form.Label optional>{t("products.priceRangeMin.label", "Price from (optional)")}</Form.Label>
+                        <Form.Control>
+                          <Input {...field} type="number" min={0} step="0.01" placeholder="0" />
+                        </Form.Control>
+                        <Form.ErrorMessage />
+                      </Form.Item>
+                    )}
+                  />
+                  <Form.Field
+                    control={form.control}
+                    name="price_range_max"
+                    render={({ field }) => (
+                      <Form.Item>
+                        <Form.Label optional>{t("products.priceRangeMax.label", "Price to (optional)")}</Form.Label>
+                        <Form.Control>
+                          <Input {...field} type="number" min={0} step="0.01" placeholder="0" />
+                        </Form.Control>
+                        <Form.ErrorMessage />
+                      </Form.Item>
+                    )}
+                  />
+                </>
+              )}
               {/* <Form.Field
                 control={form.control}
                 name="status"
