@@ -41,6 +41,7 @@ export default defineConfig(({ mode }) => {
       ),
     },
     server: {
+      port: 9003,
       open: true,
     },
     optimizeDeps: {
