@@ -91,7 +91,6 @@ export const CustomerOrderSection = ({
             label: t("fields.updatedAt"),
           },
         ]}
-        search={true}
         queryObject={raw}
         prefix={PREFIX}
       />

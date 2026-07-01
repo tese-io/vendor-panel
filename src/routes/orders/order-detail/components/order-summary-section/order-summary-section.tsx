@@ -4,33 +4,36 @@ import { Link } from "react-router-dom"
 
 import {
   ArrowLongRight,
-  ArrowPath,
-  ArrowUturnLeft,
-  ExclamationCircle,
   TriangleDownMini,
 } from "@medusajs/icons"
 import {
   AdminOrder,
-  AdminOrderPreview,
-  AdminPaymentCollection,
-  AdminRegion,
+  AdminOrderLineItem,
+  AdminReservation,
   PaymentStatus,
 } from "@medusajs/types"
+import {
+  ExtendedAdminOrder,
+  ExtendedAdminPaymentCollection,
+} from "../../../../../types/order"
 import {
   Button,
   clx,
   Container,
+  Copy,
   Heading,
+  StatusBadge,
   Text,
   toast,
   usePrompt,
 } from "@medusajs/ui"
 
 import { ActionMenu } from "../../../../../components/common/action-menu"
-import { useOrderPreview } from "../../../../../hooks/api/orders"
+import {
+  useOrderCommission,
+} from "../../../../../hooks/api/orders"
 import { useMarkPaymentCollectionAsPaid } from "../../../../../hooks/api/payment-collections"
 import { useReservationItems } from "../../../../../hooks/api/reservations"
-import { useReturns } from "../../../../../hooks/api/returns"
 import { formatCurrency } from "../../../../../lib/format-currency"
 import {
   getLocaleAmount,
@@ -38,12 +41,12 @@ import {
   isAmountLessThenRoundingError,
 } from "../../../../../lib/money-amount-helpers"
 import { getTotalCaptured } from "../../../../../lib/payment"
-import { getReturnableQuantity } from "../../../../../lib/rma"
 import { CopyPaymentLink } from "../copy-payment-link/copy-payment-link"
 import ShippingInfoPopover from "./shipping-info-popover"
+import { Thumbnail } from "../../../../../components/common/thumbnail"
 
 type OrderSummarySectionProps = {
-  order: AdminOrder
+  order: ExtendedAdminOrder
 }
 
 export const OrderSummarySection = ({
@@ -59,20 +62,12 @@ export const OrderSummarySection = ({
     { enabled: Array.isArray(order?.items) }
   )
 
-  const { order: orderPreview } = useOrderPreview(order.id!)
-
-  const { returns = [] } = useReturns({
-    status: "requested",
-    order_id: order.id,
-    fields: "+received_at",
-  })
-
   const receivableReturns = useMemo(
-    () => returns.filter((r) => !r.canceled_at),
-    [returns]
+    () => order.returns?.filter((r) => !r.canceled_at),
+    [order]
   )
 
-  const showReturns = !!receivableReturns.length
+  const showReturns = !!receivableReturns?.length
 
   /**
    * Show Allocation button only if there are unfulfilled items that don't have reservations
@@ -86,24 +81,22 @@ export const OrderSummarySection = ({
       reservations.map((r) => [r.line_item_id, r.id])
     )
 
-    for (const item of order.items) {
-      // Inventory is managed
-      if (item.variant?.manage_inventory) {
-        // There are items that are unfulfilled
-        if (item.quantity - item.detail.fulfilled_quantity > 0) {
-          // Reservation for this item doesn't exist
-          if (!reservationsMap.has(item.id)) {
-            return true
-          }
-        }
-      }
-    }
+    return order.items.some((item) => {
+      const hasUnfulfilledQuantity = 
+        item.quantity && 
+        item.detail && 
+        item.quantity - item.detail.fulfilled_quantity > 0
+      
+      return (
+        item.variant?.manage_inventory &&
+        hasUnfulfilledQuantity &&
+        !reservationsMap.has(item.id)
+      )
+    })
+  }, [reservations, order.items])
 
-    return false
-  }, [reservations])
-
-  const unpaidPaymentCollection =
-    order.split_order_payment.status !== "captured"
+  const unpaidPaymentCollection: ExtendedAdminPaymentCollection | undefined =
+    order.split_order_payment && order.split_order_payment.status !== "captured"
       ? {
           id: order.split_order_payment.payment_collection_id,
           amount: order.split_order_payment.authorized_amount,
@@ -132,7 +125,7 @@ export const OrderSummarySection = ({
     unpaidPaymentCollection && pendingDifference < 0 && isAmountSignificant
 
   const handleMarkAsPaid = async (
-    paymentCollection: Partial<AdminPaymentCollection>
+    paymentCollection: Partial<ExtendedAdminPaymentCollection>
   ) => {
     const res = await prompt({
       title: t("orders.payment.markAsPaid"),
@@ -173,14 +166,15 @@ export const OrderSummarySection = ({
 
   return (
     <Container className="divide-y divide-dashed p-0">
-      <Header order={order} orderPreview={orderPreview} />
+      <Header />
+      <ItemBreakdown order={order} reservations={reservations!} />
       <CostBreakdown order={order} />
       <Total order={order} />
 
       {(showAllocateButton || showReturns || showPayment || showRefund) && (
         <div className="bg-ui-bg-subtle flex items-center justify-end gap-x-2 rounded-b-xl px-4 py-4">
           {showReturns &&
-            (receivableReturns.length === 1 ? (
+            (receivableReturns?.length === 1 ? (
               <Button asChild variant="secondary" size="small">
                 <Link
                   to={`/orders/${order.id}/returns/${receivableReturns[0].id}/receive`}
@@ -192,7 +186,7 @@ export const OrderSummarySection = ({
               <ActionMenu
                 groups={[
                   {
-                    actions: receivableReturns.map((r) => {
+                    actions: receivableReturns?.map((r) => {
                       let id = r.id
                       let returnType = "Return"
 
@@ -208,7 +202,7 @@ export const OrderSummarySection = ({
 
                       return {
                         label: t("orders.returns.receive.receiveItems", {
-                          id: `#${id.slice(-7)}`,
+                          id: `#${id?.slice(-7)}`,
                           returnType,
                         }),
                         icon: <ArrowLongRight />,
@@ -267,73 +261,135 @@ export const OrderSummarySection = ({
   )
 }
 
-const Header = ({
-  order,
-  orderPreview,
-}: {
-  order: AdminOrder
-  orderPreview?: AdminOrderPreview
-}) => {
+const Header = () => {
   const { t } = useTranslation()
-
-  // is ture if there is no shipped items ATM
-  const shouldDisableReturn = order.items.every(
-    (i) => !(getReturnableQuantity(i) > 0)
-  )
-
-  const isOrderEditActive = orderPreview?.order_change?.change_type === "edit"
 
   return (
     <div className="flex items-center justify-between px-6 py-4">
       <Heading level="h2">{t("fields.summary")}</Heading>
-      <ActionMenu
-        groups={[
-          {
-            actions: [
-              {
-                label: t("orders.returns.create"),
-                to: `/orders/${order.id}/returns`,
-                icon: <ArrowUturnLeft />,
-                disabled:
-                  shouldDisableReturn ||
-                  isOrderEditActive ||
-                  !!orderPreview?.order_change?.exchange_id ||
-                  !!orderPreview?.order_change?.claim_id,
-              },
-              {
-                label:
-                  orderPreview?.order_change?.id &&
-                  orderPreview?.order_change?.exchange_id
-                    ? t("orders.exchanges.manage")
-                    : t("orders.exchanges.create"),
-                to: `/orders/${order.id}/exchanges`,
-                icon: <ArrowPath />,
-                disabled:
-                  shouldDisableReturn ||
-                  isOrderEditActive ||
-                  (!!orderPreview?.order_change?.return_id &&
-                    !orderPreview?.order_change?.exchange_id) ||
-                  !!orderPreview?.order_change?.claim_id,
-              },
-              {
-                label:
-                  orderPreview?.order_change?.id &&
-                  orderPreview?.order_change?.claim_id
-                    ? t("orders.claims.manage")
-                    : t("orders.claims.create"),
-                to: `/orders/${order.id}/claims`,
-                icon: <ExclamationCircle />,
-                disabled:
-                  shouldDisableReturn ||
-                  isOrderEditActive ||
-                  (!!orderPreview?.order_change?.return_id &&
-                    !orderPreview?.order_change?.claim_id) ||
-                  !!orderPreview?.order_change?.exchange_id,
-              },
-            ],
-          },
-        ]}
-      />
+    </div>
+  )
+}
+
+const Item = ({
+  item,
+  currencyCode,
+  reservation,
+}: {
+  item: AdminOrderLineItem
+  currencyCode: string
+  reservation?: AdminReservation
+}) => {
+  const { t } = useTranslation()
+
+  const isInventoryManaged = item.variant?.manage_inventory
+  const hasUnfulfilledItems = item.quantity - item.detail.fulfilled_quantity > 0
+
+  const original_price =
+    item.variant?.prices?.find((price) => price.currency_code === currencyCode)
+      ?.amount || 0
+  const price = item.unit_price
+
+  return (
+    <>
+      <div
+        key={item.id}
+        className="text-ui-fg-subtle grid grid-cols-2 items-center gap-x-4 px-6 py-4"
+      >
+        <div className="flex items-start gap-x-4">
+          <Thumbnail src={item.thumbnail} size="large" />
+          <div>
+            <Text
+              size="small"
+              leading="compact"
+              weight="plus"
+              className="text-ui-fg-base"
+            >
+              {item.title || item.product_title}
+            </Text>
+
+            {item.variant_sku && (
+              <div className="flex items-center gap-x-1">
+                <Text size="small">{item.variant_sku}</Text>
+                <Copy content={item.variant_sku} className="text-ui-fg-muted" />
+              </div>
+            )}
+            <Text size="small">
+              {item.variant?.options?.map((o) => o.value).join(" · ")}
+            </Text>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 items-center gap-x-4">
+          <div className="flex items-center justify-end gap-x-4">
+            <Text size="small">
+              {original_price !== price && (
+                <span className="line-through text-ui-fg-muted text-xs mr-1">
+                  {getLocaleAmount(original_price, currencyCode)}
+                </span>
+              )}
+              {getLocaleAmount(price, currencyCode)}
+            </Text>
+          </div>
+
+          <div className="flex items-center gap-x-2">
+            <div className="w-fit min-w-[27px]">
+              <Text size="small">
+                <span className="tabular-nums">{item.quantity}</span>x
+              </Text>
+            </div>
+
+            <div className="overflow-visible">
+              {isInventoryManaged && hasUnfulfilledItems && (
+                <StatusBadge
+                  color={reservation ? "green" : "orange"}
+                  className="text-nowrap"
+                >
+                  {reservation
+                    ? t("orders.reservations.allocatedLabel")
+                    : t("orders.reservations.notAllocatedLabel")}
+                </StatusBadge>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end">
+            <Text size="small" className="pt-[1px]">
+              {getLocaleAmount(item.original_total || 0, currencyCode)}
+            </Text>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+const ItemBreakdown = ({
+  order,
+  reservations,
+}: {
+  order: AdminOrder
+  reservations?: AdminReservation[]
+}) => {
+  const reservationsMap = useMemo(
+    () => new Map((reservations || []).map((r) => [r.line_item_id, r])),
+    [reservations]
+  )
+
+  return (
+    <div>
+      {order.items?.map((item) => {
+        const reservation = reservationsMap.get(item.id)
+
+        return (
+          <Item
+            key={item.id}
+            item={item}
+            currencyCode={order.currency_code}
+            reservation={reservation}
+          />
+        )
+      })}
     </div>
   )
 }
@@ -369,12 +425,14 @@ const Cost = ({
 const CostBreakdown = ({
   order,
 }: {
-  order: AdminOrder & { region?: AdminRegion | null }
+  order: ExtendedAdminOrder
 }) => {
   const { t } = useTranslation()
   const [isTaxOpen, setIsTaxOpen] = useState(false)
   const [isShippingOpen, setIsShippingOpen] = useState(false)
 
+  const { commission } = useOrderCommission(order.id!)
+  
   const discountCodes = useMemo(() => {
     const codes = new Set()
     order.items.forEach((item) =>
@@ -551,13 +609,15 @@ const CostBreakdown = ({
           </div>
         )}
       </>
-      <Cost
-        label={"Commission"}
-        value={getLocaleAmount(
-          order.commission_value.amount,
-          order.commission_value.currency_code
-        )}
-      />
+      {commission && (
+        <Cost
+          label={"Commission"}
+          value={getLocaleAmount(
+            parseFloat(commission.commission_value.amount),
+            commission.commission_value.currency_code
+          )}
+        />
+      )}
     </div>
   )
 }

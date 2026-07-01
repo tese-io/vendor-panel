@@ -10,7 +10,7 @@ import { Link, useSearchParams } from "react-router-dom"
 import * as z from "zod"
 import { Form } from "../../components/common/form"
 import AvatarBox from "../../components/common/logo-box/avatar-box"
-import { useSignUpWithEmailPass } from "../../hooks/api/auth"
+import { useSignUpForInvite } from "../../hooks/api/auth"
 import { useAcceptInvite } from "../../hooks/api/invites"
 import { isFetchError } from "../../lib/is-fetch-error"
 
@@ -45,12 +45,12 @@ export const Invite = () => {
   const [searchParams] = useSearchParams()
   const [success, setSuccess] = useState(false)
 
-  const token = searchParams.get("token")
+  const token = searchParams.get("token") || null
   const invite: DecodedInvite | null = token ? decodeToken(token) : null
   const isValidInvite = invite && validateDecodedInvite(invite)
 
   return (
-    <div className="bg-ui-bg-subtle relative flex min-h-dvh w-dvw items-center justify-center p-4">
+    <div className="tese-auth-page relative flex min-h-dvh w-dvw items-center justify-center p-4">
       <div className="flex w-full max-w-[360px] flex-col items-center">
         <AvatarBox checked={success} />
         <div className="max-h-[557px] w-full will-change-contents">
@@ -190,7 +190,7 @@ const CreateView = ({
   })
 
   const { mutateAsync: signUpEmailPass, isPending: isCreatingAuthUser } =
-    useSignUpWithEmailPass()
+    useSignUpForInvite()
 
   const { mutateAsync: acceptInvite, isPending: isAcceptingInvite } =
     useAcceptInvite(token)
@@ -203,9 +203,7 @@ const CreateView = ({
       })
 
       const invitePayload = {
-        email: data.email,
-        first_name: data.first_name,
-        last_name: data.last_name,
+        name: `${data.first_name} ${data.last_name}`,
       }
 
       await acceptInvite({
@@ -216,7 +214,8 @@ const CreateView = ({
       toast.success(t("invite.toast.accepted"))
 
       onSuccess()
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error.message)
       if (isFetchError(error) && error.status === 400) {
         form.setError("root", {
           type: "manual",
@@ -225,11 +224,6 @@ const CreateView = ({
         setInvalid(true)
         return
       }
-
-      form.setError("root", {
-        type: "manual",
-        message: t("errors.serverError"),
-      })
     }
   })
 
@@ -406,7 +400,7 @@ const SuccessView = () => {
 
 const InviteSchema = z.object({
   id: z.string(),
-  jti: z.string(),
+  // jti: z.string(),
   exp: z.number(),
   iat: z.number(),
 })

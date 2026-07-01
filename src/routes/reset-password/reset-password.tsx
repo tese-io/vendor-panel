@@ -49,7 +49,7 @@ type DecodedResetPasswordToken = {
 }
 
 const validateDecodedResetPasswordToken = (
-  decoded: any
+  decoded: DecodedResetPasswordToken
 ): decoded is DecodedResetPasswordToken => {
   return ResetPasswordTokenSchema.safeParse(decoded).success
 }
@@ -143,7 +143,7 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
   }
 
   return (
-    <div className="bg-ui-bg-subtle flex min-h-dvh w-dvw items-center justify-center">
+    <div className="tese-auth-page flex min-h-dvh w-dvw items-center justify-center">
       <div className="m-4 flex w-full max-w-[280px] flex-col items-center">
         <LogoBox className="mb-4" />
         <div className="mb-6 flex flex-col items-center">

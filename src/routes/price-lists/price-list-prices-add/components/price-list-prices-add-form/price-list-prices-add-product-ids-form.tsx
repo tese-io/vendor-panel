@@ -17,6 +17,8 @@ import { useProductTableQuery } from "../../../../../hooks/table/query/use-produ
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { PriceListCreateProductsSchema } from "../../../common/schemas"
 import { PriceListPricesAddSchema } from "./schema"
+import { usePriceListProducts } from "../../../../../hooks/api"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 
 type PriceListPricesAddProductIdsFormProps = {
   form: UseFormReturn<PriceListPricesAddSchema>
@@ -68,12 +70,14 @@ export const PriceListPricesAddProductIdsForm = ({
     pageSize: PAGE_SIZE,
     prefix: PREFIX,
   })
-  const { products, count, isLoading, isError, error } = useProducts(
+  const { products, isLoading, isError, error } = useProducts(
     { ...searchParams, fields: "+thumbnail" },
     {
       placeholderData: keepPreviousData,
     }
   )
+
+  const { products: priceListProducts } = usePriceListProducts(priceList.id)
 
   const updater: OnChangeFn<RowSelectionState> = (fn) => {
     const state = typeof fn === "function" ? fn(rowSelection) : fn
@@ -108,10 +112,18 @@ export const PriceListPricesAddProductIdsForm = ({
   const columns = useColumns()
   const filters = useProductTableFilters()
 
+  const filteredProducts = useMemo(() => {
+    return products?.filter((product) => {
+      return !priceListProducts?.some(
+        (plProduct: { id: string }) => plProduct.id === product.id
+      )
+    })
+  }, [products, priceListProducts])
+
   const { table } = useDataTable({
-    data: products || [],
+    data: filteredProducts || [],
     columns,
-    count,
+    count: filteredProducts?.length || 0,
     enablePagination: true,
     enableRowSelection: (row) => {
       return (
@@ -142,7 +154,7 @@ export const PriceListPricesAddProductIdsForm = ({
         filters={filters}
         pageSize={PAGE_SIZE}
         prefix={PREFIX}
-        count={count}
+        count={filteredProducts?.length || 0}
         isLoading={isLoading}
         layout="fill"
         orderBy={[
@@ -159,7 +171,7 @@ export const PriceListPricesAddProductIdsForm = ({
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = () => {
   const base = useProductTableColumns()

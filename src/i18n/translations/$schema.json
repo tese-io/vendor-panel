@@ -362,9 +362,31 @@
         },
         "mustBePositive": {
           "type": "string"
+        },
+        "rules": {
+          "type": "object",
+          "properties": {
+            "lower": {
+              "type": "string"
+            },
+            "upper": {
+              "type": "string"
+            },
+            "12chars": {
+              "type": "string"
+            },
+            "digit": {
+              "type": "string"
+            },
+            "specialChar": {
+              "type": "string"
+            }
+          },
+          "required": ["lower", "upper", "12chars", "digit", "specialChar"],
+          "additionalProperties": false
         }
       },
-      "required": ["mustBeInt", "mustBePositive"],
+      "required": ["mustBeInt", "mustBePositive", "rules"],
       "additionalProperties": false
     },
     "actions": {
@@ -1515,11 +1537,14 @@
         "list": {
           "type": "object",
           "properties": {
+            "noRecordsTitle": {
+              "type": "string"
+            },
             "noRecordsMessage": {
               "type": "string"
             }
           },
-          "required": ["noRecordsMessage"],
+          "required": ["noRecordsTitle", "noRecordsMessage"],
           "additionalProperties": false
         },
         "edit": {
@@ -1874,9 +1899,25 @@
               },
               "required": ["heading", "description"],
               "additionalProperties": false
+            },
+            "editStocksAndPrices": {
+              "type": "object",
+              "properties": {
+                "header": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "successToast": {
+                  "type": "string"
+                }
+              },
+              "required": ["header", "description", "successToast"],
+              "additionalProperties": false
             }
           },
-          "required": ["header", "empty", "filtered"],
+          "required": ["header", "empty", "filtered", "editStocksAndPrices"],
           "additionalProperties": false
         },
         "attributes": {
@@ -1910,6 +1951,9 @@
               "type": "string"
             },
             "invalidFileType": {
+              "type": "string"
+            },
+            "fileTooLarge": {
               "type": "string"
             },
             "failedToUpload": {
@@ -1966,6 +2010,7 @@
             "uploadImagesLabel",
             "uploadImagesHint",
             "invalidFileType",
+            "fileTooLarge",
             "failedToUpload",
             "deleteWarning_one",
             "deleteWarning_other",
@@ -2648,6 +2693,25 @@
           },
           "required": ["delete"],
           "additionalProperties": false
+        },
+        "bulkDelete": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "success": {
+              "type": "string"
+            },
+            "error": {
+              "type": "string"
+            }
+          },
+          "required": ["title", "description", "success", "error"],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -2676,7 +2740,8 @@
         "organization",
         "stock",
         "shippingProfile",
-        "toasts"
+        "toasts",
+        "bulkDelete"
       ],
       "additionalProperties": false
     },
@@ -8167,6 +8232,16 @@
             "products": {
               "type": "object",
               "properties": {
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "noProducts": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["noProducts"],
+                  "additionalProperties": false
+                },
                 "list": {
                   "type": "object",
                   "properties": {
@@ -8178,7 +8253,7 @@
                   "additionalProperties": false
                 }
               },
-              "required": ["list"],
+              "required": ["errors", "list"],
               "additionalProperties": false
             }
           },
@@ -8244,9 +8319,12 @@
                 },
                 "editPrices": {
                   "type": "string"
+                },
+                "editPricesDisabled": {
+                  "type": "string"
                 }
               },
-              "required": ["addProducts", "editPrices"],
+              "required": ["addProducts", "editPrices", "editPricesDisabled"],
               "additionalProperties": false
             },
             "delete": {
@@ -9837,18 +9915,28 @@
         "hint": {
           "type": "string"
         },
-        "notSellerYet": { "type": "string" }
+        "notSellerYet": {
+          "type": "string"
+        }
       },
-      "required": ["forgotPassword", "title", "hint"],
+      "required": ["forgotPassword", "title", "hint", "notSellerYet"],
       "additionalProperties": false
     },
     "register": {
       "type": "object",
       "properties": {
-        "title": { "type": "string" },
-        "hint": { "type": "string" },
-        "alreadySeller": { "type": "string" }
-      }
+        "title": {
+          "type": "string"
+        },
+        "hint": {
+          "type": "string"
+        },
+        "alreadySeller": {
+          "type": "string"
+        }
+      },
+      "required": ["title", "hint", "alreadySeller"],
+      "additionalProperties": false
     },
     "invite": {
       "type": "object",
@@ -10817,6 +10905,12 @@
         "priceTemplate": {
           "type": "string"
         },
+        "currentPriceTemplate": {
+          "type": "string"
+        },
+        "stockTemplate": {
+          "type": "string"
+        },
         "height": {
           "type": "string"
         },
@@ -11045,6 +11139,8 @@
         "expiryDate",
         "price",
         "priceTemplate",
+        "currentPriceTemplate",
+        "stockTemplate",
         "height",
         "width",
         "length",
@@ -11190,6 +11286,7 @@
     "apiKeyManagement",
     "returnReasons",
     "login",
+    "register",
     "invite",
     "resetPassword",
     "workflowExecutions",

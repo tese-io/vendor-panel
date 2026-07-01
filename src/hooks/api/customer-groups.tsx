@@ -7,11 +7,12 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query"
-import { fetchQuery, sdk } from "../../lib/client"
+import { fetchQuery } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { customersQueryKeys } from "./customers"
 import { filterCustomerGroups } from "../../routes/orders/common/customerGroupFiltering"
+import { CustomerGroupListResponse } from "../../types/customer-group"
 
 const CUSTOMER_GROUPS_QUERY_KEY = "customer_groups" as const
 export const customerGroupsQueryKeys = queryKeysFactory(
@@ -50,15 +51,12 @@ export const useCustomerGroups = (
     UseQueryOptions<
       HttpTypes.AdminGetCustomerGroupsParams,
       FetchError,
-      HttpTypes.AdminCustomerGroupListResponse & {
-        customer_group?: any
-      },
+      CustomerGroupListResponse,
       QueryKey
     >,
     "queryFn" | "queryKey"
   >,
-  filters?: any,
-  sort?: string
+  filters?: any
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
@@ -68,11 +66,11 @@ export const useCustomerGroups = (
     queryKey: customerGroupsQueryKeys.list(query),
     ...options,
   })
-
+  
   const filteredData = filterCustomerGroups(
     data?.customer_groups,
     filters,
-    sort
+    filters?.sort
   )
 
   const customer_groups = filteredData?.filter((item) => item.customer_group)
@@ -80,10 +78,11 @@ export const useCustomerGroups = (
   const count = customer_groups?.length || 0
 
   return {
-    ...data,
+    ...rest,
     count,
     customer_groups,
-    ...rest,
+    offset: data?.offset,
+    limit: data?.limit,
   }
 }
 

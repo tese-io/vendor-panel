@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom"
 import { useMe } from "../../../hooks/api/users"
 import { SearchProvider } from "../../../providers/search-provider"
 import { SidebarProvider } from "../../../providers/sidebar-provider"
+import { TalkjsProvider } from "../../../providers/talkjs-provider"
 
 export const ProtectedRoute = () => {
   const { seller, isPending, error } = useMe()
@@ -19,7 +20,7 @@ export const ProtectedRoute = () => {
   if (!seller) {
     return (
       <Navigate
-        to={`/login${error?.message ? `?reason=${error.message}` : ""}`}
+        to={`/login${error?.message ? `?reason=${encodeURIComponent(error.message)}` : ""}`}
         state={{ from: location }}
         replace
       />
@@ -27,10 +28,12 @@ export const ProtectedRoute = () => {
   }
 
   return (
-    <SidebarProvider>
-      <SearchProvider>
-        <Outlet />
-      </SearchProvider>
-    </SidebarProvider>
+    <TalkjsProvider>
+      <SidebarProvider>
+        <SearchProvider>
+          <Outlet />
+        </SearchProvider>
+      </SidebarProvider>
+    </TalkjsProvider>
   )
 }

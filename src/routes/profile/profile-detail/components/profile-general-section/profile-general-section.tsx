@@ -4,6 +4,7 @@ import { Container, Heading, Text } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { TeamMemberProps } from "../../../../../types/user"
+import { ImageAvatar } from "../../../../../components/common/image-avatar"
 
 type ProfileGeneralSectionProps = {
   user: TeamMemberProps
@@ -41,14 +42,7 @@ export const ProfileGeneralSection = ({ user }: ProfileGeneralSectionProps) => {
         <Text size="small" leading="compact" weight="plus">
           Photo
         </Text>
-        <Text size="small" leading="compact">
-          <div
-            className="w-12 h-12 bg-cover bg-center bg-no-repeat rounded-full flex items-center justify-center border text-lg"
-            style={{ backgroundImage: `url(${photo})` }}
-          >
-            {!photo && name[0]}
-          </div>
-        </Text>
+        <ImageAvatar src={photo || "/logo.svg"} size={8} rounded />
       </div>
       <div className="text-ui-fg-subtle grid grid-cols-2 items-center px-6 py-4">
         <Text size="small" leading="compact" weight="plus">

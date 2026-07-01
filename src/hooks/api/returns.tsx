@@ -405,8 +405,12 @@ export const useInitiateReceiveReturn = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload: HttpTypes.AdminInitiateReceiveReturn) =>
-      sdk.admin.return.initiateReceive(id, payload),
+    mutationFn: (payload: HttpTypes.AdminInitiateReceiveReturn) => {
+      return fetchQuery(`/vendor/returns/${id}/receive`, {
+        method: "POST",
+        body: payload,
+      })
+    },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: ordersQueryKeys.details(),
@@ -432,8 +436,12 @@ export const useAddReceiveItems = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload: HttpTypes.AdminReceiveItems) =>
-      sdk.admin.return.receiveItems(id, payload),
+    mutationFn: (payload: HttpTypes.AdminReceiveItems) => {
+      return fetchQuery(`/vendor/returns/${id}/receive-items`, {
+        method: "POST",
+        body: payload,
+      })
+    },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: ordersQueryKeys.details(),
@@ -604,8 +612,12 @@ export const useConfirmReturnReceive = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload: HttpTypes.AdminConfirmReceiveReturn) =>
-      sdk.admin.return.confirmReceive(id, payload),
+    mutationFn: (payload: HttpTypes.AdminConfirmReceiveReturn) => {
+      return fetchQuery(`/vendor/returns/${id}/receive/confirm`, {
+        method: "POST",
+        body: payload,
+      })
+    },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({
         queryKey: ordersQueryKeys.details(),

@@ -12,6 +12,7 @@ import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { customerGroupsQueryKeys } from "./customer-groups"
 import { filterOrders } from "../../routes/orders/common/orderFiltering"
+import { processCustomers } from "../../utils/customer-filtering"
 
 const CUSTOMERS_QUERY_KEY = "customers" as const
 export const customersQueryKeys = queryKeysFactory(CUSTOMERS_QUERY_KEY)
@@ -56,7 +57,8 @@ export const useCustomers = (
       QueryKey
     >,
     "queryFn" | "queryKey"
-  >
+  >,
+  filters?: any
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
@@ -68,9 +70,15 @@ export const useCustomers = (
     ...options,
   })
 
-  const count = data?.customers.length || 0
+  const processedCustomers = processCustomers(data?.customers, filters || {})
+  const count = processedCustomers?.length || 0
 
-  return { ...data, count, ...rest }
+  return {
+    ...data,
+    customers: processedCustomers,
+    count,
+    ...rest,
+  }
 }
 
 export const useCreateCustomer = (

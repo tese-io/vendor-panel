@@ -7,7 +7,7 @@ type UseProductTableQueryProps = {
 }
 
 const DEFAULT_FIELDS =
-  "id,title,handle,status,*collection,*sales_channels,variants.id"
+  "id,title,handle,status,*collection,*sales_channels,variants.id,thumbnail"
 
 export const useProductTableQuery = ({
   prefix,
@@ -47,7 +47,13 @@ export const useProductTableQuery = ({
     q,
   } = queryObject
 
-  const searchParams: HttpTypes.AdminProductListParams = {
+  const searchParams: HttpTypes.AdminProductListParams & {
+    tag_id?: string | string[]
+    categoryId?: string | string[]
+    collectionId?: string | string[]
+    typeId?: string | string[]
+    status?: string | string[]
+  } = {
     limit: pageSize,
     offset: offset ? Number(offset) : 0,
     sales_channel_id: sales_channel_id?.split(","),

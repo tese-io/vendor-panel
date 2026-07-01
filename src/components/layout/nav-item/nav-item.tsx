@@ -111,7 +111,7 @@ export const NavItem = ({
       isSetting?: boolean
     }) => {
       if (["core", "setting"].includes(type)) {
-        isActive = pathname.startsWith(to)
+        isActive = pathname.startsWith(to) && !pathname.split(to)[1]
       }
 
       return clx(BASE_NAV_LINK_CLASSES, {

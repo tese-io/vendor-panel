@@ -51,6 +51,19 @@ export const useSignUpWithEmailPass = (
   })
 }
 
+export const useSignUpForInvite = (
+  options?: UseMutationOptions<
+    string,
+    FetchError,
+    HttpTypes.AdminSignInWithEmailPassword
+  >
+) => {
+  return useMutation({
+    mutationFn: (payload) => sdk.auth.register("seller", "emailpass", payload),
+    ...options,
+  })
+}
+
 export const useResetPasswordForEmailPass = (
   options?: UseMutationOptions<void, FetchError, { email: string }>
 ) => {

@@ -8,6 +8,9 @@ const customerDetailQuery = (id: string) => ({
   queryFn: async () =>
     fetchQuery(`/vendor/customers/${id}`, {
       method: "GET",
+      query: {
+        fields: "*groups, *groups.customers",
+      },
     }),
 })
 

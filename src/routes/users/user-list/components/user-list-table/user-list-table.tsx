@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom"
 
 import { PencilSquare } from "@medusajs/icons"
 import { DataTable } from "../../../../../components/data-table"
-import { useDataTableDateFilters } from "../../../../../components/data-table/helpers/general/use-data-table-date-filters"
+// import { useDataTableDateFilters } from "../../../../../components/data-table/helpers/general/use-data-table-date-filters"
 import { useUsers } from "../../../../../hooks/api/users"
 import { useQueryParams } from "../../../../../hooks/use-query-params"
 import { TeamMemberProps } from "../../../../../types/user"
@@ -15,20 +15,30 @@ const PAGE_SIZE = 20
 
 export const UserListTable = () => {
   const { q, order, offset } = useQueryParams(["q", "order", "offset"])
-  const { members, count, isPending, isError, error } = useUsers(
+  const { members, isPending, isError, error } = useUsers(
     {
-      q,
+      limit: 9999,
       order,
-      offset: offset ? parseInt(offset) : 0,
-      limit: PAGE_SIZE,
     },
     {
       placeholderData: keepPreviousData,
     }
   )
 
+  const processedMembers = useMemo(() => {
+    if (q) {
+      return members?.filter((member) =>
+        member.email.toLowerCase().includes(q.toLowerCase())
+      )
+    }
+    return members
+  }, [members, q])
+
+  const count = processedMembers?.length ?? 0
+  const membersOffset = offset ? parseInt(offset) : 0
+
   const columns = useColumns()
-  const filters = useFilters()
+  // const filters = useFilters()
 
   const { t } = useTranslation()
 
@@ -39,9 +49,12 @@ export const UserListTable = () => {
   return (
     <Container className="divide-y p-0">
       <DataTable
-        data={members}
+        data={
+          processedMembers?.slice(membersOffset, membersOffset + PAGE_SIZE) ??
+          []
+        }
         columns={columns}
-        filters={filters}
+        // filters={filters}
         getRowId={(row) => row.id}
         rowCount={count}
         pageSize={PAGE_SIZE}
@@ -109,10 +122,10 @@ const useColumns = () => {
   )
 }
 
-const useFilters = () => {
-  const dateFilters = useDataTableDateFilters()
+// const useFilters = () => {
+//   const dateFilters = useDataTableDateFilters()
 
-  return useMemo(() => {
-    return dateFilters
-  }, [dateFilters])
-}
+//   return useMemo(() => {
+//     return dateFilters
+//   }, [dateFilters])
+// }

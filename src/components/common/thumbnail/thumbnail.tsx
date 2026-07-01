@@ -4,7 +4,7 @@ import { clx } from "@medusajs/ui"
 type ThumbnailProps = {
   src?: string | null
   alt?: string
-  size?: "small" | "base"
+  size?: "small" | "base" | "large"
 }
 
 export const Thumbnail = ({ src, alt, size = "base" }: ThumbnailProps) => {
@@ -15,6 +15,7 @@ export const Thumbnail = ({ src, alt, size = "base" }: ThumbnailProps) => {
         {
           "h-8 w-6": size === "base",
           "h-5 w-4": size === "small",
+          "h-12 w-12": size === "large",
         }
       )}
     >

@@ -19,6 +19,7 @@ const DEFAULT_PROPERTIES = [
   "tax_total",
   "refundable_total",
   "order_change",
+  "commission_value",
 ]
 
 const DEFAULT_RELATIONS = [
@@ -30,6 +31,7 @@ const DEFAULT_RELATIONS = [
   "+items.variant.manage_inventory",
   "*items.variant.inventory_items.inventory",
   "+items.variant.inventory_items.required_quantity",
+  "*items.variant.prices",
   "+summary",
   "*shipping_address",
   "*billing_address",
@@ -44,6 +46,7 @@ const DEFAULT_RELATIONS = [
   "region.automatic_taxes",
   "*split_order_payment",
   "payment_status",
+  "*returns",
 ]
 
 export const DEFAULT_FIELDS = `${DEFAULT_PROPERTIES.join(

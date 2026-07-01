@@ -10,6 +10,8 @@ type ProductStatusCellProps = {
 export const ProductStatusCell = ({ status }: ProductStatusCellProps) => {
   const { t } = useTranslation()
 
+  if (!status) return null
+
   const [color, text] = {
     draft: ["grey", t("products.productStatus.draft")],
     proposed: ["orange", t("products.productStatus.proposed")],

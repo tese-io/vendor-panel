@@ -22,6 +22,7 @@ export const Login = () => {
   const [searchParams] = useSearchParams()
 
   const reason = searchParams.get("reason") || ""
+  const reasonMessage = reason && reason.toLowerCase() === "unauthorized" ? "Session expired" : reason
 
   const { getWidgets } = useDashboardExtension()
 
@@ -71,17 +72,17 @@ export const Login = () => {
   })
 
   const serverError =
-    form.formState.errors?.root?.serverError?.message || reason
+    form.formState.errors?.root?.serverError?.message || reasonMessage
   const validationError =
     form.formState.errors.email?.message ||
     form.formState.errors.password?.message
 
   return (
-    <div className="bg-ui-bg-subtle flex min-h-dvh w-dvw items-center justify-center">
-      <div className="m-4 flex w-full max-w-[280px] flex-col items-center">
+    <div className="tese-auth-page flex min-h-dvh w-dvw items-center justify-center">
+      <div className="tese-auth-card m-4 flex flex-col items-center">
         <AvatarBox />
         <div className="mb-4 flex flex-col items-center">
-          <Heading>{t("login.title")}</Heading>
+          <Heading className="text-[rgb(var(--tese-ink))]">{t("login.title")}</Heading>
           <Text size="small" className="text-ui-fg-subtle text-center">
             {t("login.hint")}
           </Text>
@@ -142,6 +143,7 @@ export const Login = () => {
                   </Hint>
                 </div>
               )}
+
               {serverError && (
                 <Alert
                   className="bg-ui-bg-base items-center p-2"
@@ -151,7 +153,7 @@ export const Login = () => {
                   {serverError}
                 </Alert>
               )}
-              <Button className="w-full" type="submit" isLoading={isPending}>
+              <Button className="tese-btn-primary w-full" type="submit" isLoading={isPending}>
                 Sign In
               </Button>
             </form>
@@ -167,7 +169,7 @@ export const Login = () => {
               <Link
                 key="reset-password-link"
                 to="/reset-password"
-                className="text-ui-fg-interactive transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover font-medium outline-none"
+                className="tese-link transition-fg font-medium outline-none"
               />,
             ]}
           />
@@ -179,7 +181,7 @@ export const Login = () => {
               components={[
                 <Link
                   to="/register"
-                  className="text-ui-fg-interactive transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover font-medium outline-none"
+                  className="tese-link transition-fg font-medium outline-none"
                 />,
               ]}
             />

@@ -1,7 +1,7 @@
 import { QueryKey, UseQueryOptions, useQuery } from "@tanstack/react-query"
 
 import { HttpTypes } from "@medusajs/types"
-import { sdk } from "../../lib/client"
+import { fetchQuery, sdk } from "../../lib/client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { FetchError } from "@medusajs/js-sdk"
 
@@ -43,7 +43,11 @@ export const useNotifications = (
   >
 ) => {
   const { data, ...rest } = useQuery({
-    queryFn: () => sdk.admin.notification.list(query),
+    queryFn: () =>
+      fetchQuery("/vendor/notifications", {
+        method: "GET",
+        query: query as Record<string, string | number>,
+      }),
     queryKey: notificationQueryKeys.list(query),
     ...options,
   })

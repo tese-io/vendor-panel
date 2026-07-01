@@ -102,21 +102,9 @@ export const useUpdateShippingOptions = (
 ) => {
   return useMutation({
     mutationFn: (payload) => {
-      if (payload.name) {
-        return fetchQuery(`/vendor/shipping-options/${id}`, {
-          method: "POST",
-          body: payload,
-        })
-      }
-
       return fetchQuery(`/vendor/shipping-options/${id}`, {
         method: "POST",
-        body: {
-          prices: payload.prices?.map((item) => ({
-            amount: item.amount,
-            currency_code: item.currency_code,
-          })),
-        },
+        body: payload,
       })
     },
     onSuccess: (data, variables, context) => {

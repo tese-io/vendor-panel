@@ -329,14 +329,14 @@ const useReferenceValues = (
         isPending: products.isPending,
         additional:
           products.products && products.count
-            ? products.count - products.products.length
+            ? products.count - (products.products?.length ?? 0)
             : 0,
         isError: products.isError,
         error: products.error,
       }
     // case TaxRateRuleReferenceType.PRODUCT_TAG:
     //   return {
-    //     labels: tags.product_tags?.map((tag: any) => tag.value),
+    //     labels: tags.product_tags?.map((tag: HttpTypes.AdminProductTag) => tag.value),
     //     isPending: tags.isPending,
     //     additional:
     //       tags.product_tags && tags.count
@@ -378,5 +378,13 @@ const useReferenceValues = (
     //     isError: customerGroups.isError,
     //     error: customerGroups.error,
     //   }
+    default:
+      return {
+        labels: undefined,
+        isPending: false,
+        additional: 0,
+        isError: false,
+        error: null,
+      }
   }
 }

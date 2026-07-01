@@ -1,15 +1,14 @@
 import { useTranslation } from "react-i18next"
 import { Filter } from "../../../components/table/data-table"
-import { useProductTags } from "../../api"
+import { useCollections, useProductCategories, useProductTags } from "../../api"
 import { useProductTypes } from "../../api/product-types"
-import { useSalesChannels } from "../../api/sales-channels"
 
 const excludeableFields = [
-  "sales_channel_id",
   "collections",
   "categories",
   "product_types",
   "product_tags",
+  "sales_channel_id",
 ] as const
 
 export const useProductTableFilters = (
@@ -36,45 +35,30 @@ export const useProductTableFilters = (
     offset: 0,
   })
 
-  // const { product_tags } = useAdminProductTags({
-  //   limit: 1000,
-  //   offset: 0,
-  // })
+  const isCategoryExcluded = exclude?.includes("categories")
 
-  const isSalesChannelExcluded = exclude?.includes("sales_channel_id")
-
-  const { sales_channels } = useSalesChannels(
+  const { product_categories } = useProductCategories(
     {
       limit: 1000,
+      offset: 0,
       fields: "id,name",
     },
     {
-      enabled: !isSalesChannelExcluded,
+      enabled: !isCategoryExcluded,
     }
   )
 
-  const isCategoryExcluded = exclude?.includes("categories")
-
-  // const { product_categories } = useAdminProductCategories({
-  //   limit: 1000,
-  //   offset: 0,
-  //   fields: "id,name",
-  //   expand: "",
-  // }, {
-  //  enabled: !isCategoryExcluded,
-  // })
-
   const isCollectionExcluded = exclude?.includes("collections")
 
-  // const { collections } = useAdminCollections(
-  //   {
-  //     limit: 1000,
-  //     offset: 0,
-  //   },
-  //   {
-  //     enabled: !isCollectionExcluded,
-  //   }
-  // )
+  const { product_collections: collections } = useCollections(
+    {
+      limit: 1000,
+      offset: 0,
+    },
+    {
+      enabled: !isCollectionExcluded,
+    }
+  )
 
   let filters: Filter[] = []
 
@@ -108,66 +92,35 @@ export const useProductTableFilters = (
     filters = [...filters, tagFilter]
   }
 
-  if (sales_channels) {
-    const salesChannelFilter: Filter = {
-      key: "sales_channel_id",
-      label: t("fields.salesChannel"),
+  if (product_categories) {
+    const categoryFilter: Filter = {
+      key: "category_id",
+      label: t("fields.category"),
       type: "select",
       multiple: true,
-      options: sales_channels.map((s) => ({
-        label: s.name,
-        value: s.id,
+      options: product_categories.map((c) => ({
+        label: c.name,
+        value: c.id,
       })),
     }
 
-    filters = [...filters, salesChannelFilter]
+    filters = [...filters, categoryFilter]
   }
 
-  // if (product_categories) {
-  //   const categoryFilter: Filter = {
-  //     key: "category_id",
-  //     label: t("fields.category"),
-  //     type: "select",
-  //     multiple: true,
-  //     options: product_categories.map((c) => ({
-  //       label: c.name,
-  //       value: c.id,
-  //     })),
-  //   }
+  if (collections) {
+    const collectionFilter: Filter = {
+      key: "collection_id",
+      label: t("fields.collection"),
+      type: "select",
+      multiple: true,
+      options: (Array.isArray(collections) ? collections : []).map((c) => ({
+        label: c.title,
+        value: c.id,
+      })),
+    }
 
-  //   filters = [...filters, categoryFilter]
-  // }
-
-  // if (collections) {
-  //   const collectionFilter: Filter = {
-  //     key: "collection_id",
-  //     label: t("fields.collection"),
-  //     type: "select",
-  //     multiple: true,
-  //     options: collections.map((c) => ({
-  //       label: c.title,
-  //       value: c.id,
-  //     })),
-  //   }
-
-  //   filters = [...filters, collectionFilter]
-  // }
-
-  // const giftCardFilter: Filter = {
-  //   key: "is_giftcard",
-  //   label: t("fields.giftCard"),
-  //   type: "select",
-  //   options: [
-  //     {
-  //       label: t("fields.true"),
-  //       value: "true",
-  //     },
-  //     {
-  //       label: t("fields.false"),
-  //       value: "false",
-  //     },
-  //   ],
-  // }
+    filters = [...filters, collectionFilter]
+  }
 
   const statusFilter: Filter = {
     key: "status",
@@ -194,16 +147,7 @@ export const useProductTableFilters = (
     ],
   }
 
-  const dateFilters: Filter[] = [
-    { label: t("fields.createdAt"), key: "created_at" },
-    { label: t("fields.updatedAt"), key: "updated_at" },
-  ].map((f) => ({
-    key: f.key,
-    label: f.label,
-    type: "date",
-  }))
-
-  filters = [...filters, statusFilter, ...dateFilters]
+  filters = [...filters, statusFilter]
 
   return filters
 }

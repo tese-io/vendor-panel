@@ -18,12 +18,20 @@ export const CustomerListTable = () => {
   const { searchParams, raw } = useCustomerTableQuery({
     pageSize: PAGE_SIZE,
   })
+
   const { customers, count, isLoading, isError, error } = useCustomers(
     {
-      ...searchParams,
+      offset: searchParams.offset,
+      limit: searchParams.limit,
     },
     {
       placeholderData: keepPreviousData,
+    },
+    {
+      groups: searchParams.groups,
+      has_account: searchParams.has_account,
+      order: searchParams.order,
+      q: searchParams.q,
     }
   )
 
@@ -76,8 +84,8 @@ export const CustomerListTable = () => {
         ]}
         isLoading={isLoading}
         navigateTo={(row) => row.original.id}
-        search
         queryObject={raw}
+        search
         noRecords={{
           message: t("customers.list.noRecordsMessage"),
         }}

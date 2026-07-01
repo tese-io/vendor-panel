@@ -2,8 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
-import { AdminFulfillment, AdminOrder } from "@medusajs/types"
-import { Button, Heading, Input, Switch, toast } from "@medusajs/ui"
+import { Button, Heading, Input, toast } from "@medusajs/ui"
 import { useFieldArray, useForm } from "react-hook-form"
 
 import { Form } from "../../../../../components/common/form"
@@ -13,11 +12,15 @@ import {
 } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCreateOrderShipment } from "../../../../../hooks/api"
+import {
+  ExtendedAdminOrder,
+  ExtendedAdminOrderFulfillment,
+} from "../../../../../types/order"
 import { CreateShipmentSchema } from "./constants"
 
 type OrderCreateFulfillmentFormProps = {
-  order: AdminOrder
-  fulfillment: AdminFulfillment
+  order: ExtendedAdminOrder
+  fulfillment: ExtendedAdminOrderFulfillment
 }
 
 export function OrderCreateShipmentForm({
@@ -43,16 +46,17 @@ export function OrderCreateShipmentForm({
   const handleSubmit = form.handleSubmit(async (data) => {
     await createShipment(
       {
-        items: fulfillment?.items?.map((i) => ({
-          id: i.line_item_id,
-          quantity: i.quantity,
-        })),
+        items:
+          fulfillment?.items
+            ?.map((i) => ({ id: i?.line_item_id, quantity: i.quantity }))
+            .filter((item) => !!item.id) ?? [],
         labels: data.labels
           .filter((l) => !!l.tracking_number)
           .map((l) => ({
             tracking_number: l.tracking_number,
             tracking_url: "#",
-            label_url: "#",
+            label_url: "#"
+            ,
           })),
       },
       {
@@ -103,12 +107,13 @@ export function OrderCreateShipmentForm({
                         return (
                           <Form.Item className="mb-4">
                             {index === 0 && (
-                              <Form.Label>
-                                {t("orders.shipment.trackingNumber")}
-                              </Form.Label>
+                              <Form.Label>Tracking URL</Form.Label>
                             )}
                             <Form.Control>
-                              <Input {...field} placeholder="123-456-789" />
+                              <Input
+                                {...field}
+                                placeholder="https://www.dhl.com/shipment/1234567890"
+                              />
                             </Form.Control>
                             <Form.ErrorMessage />
                           </Form.Item>
@@ -123,7 +128,7 @@ export function OrderCreateShipmentForm({
                     className="self-end"
                     variant="secondary"
                   >
-                    {t("orders.shipment.addTracking")}
+                    Add tracking URL
                   </Button>
                 </div>
               </div>

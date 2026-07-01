@@ -1,11 +1,9 @@
 import { PencilSquare, Plus, Trash } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import { Checkbox, Container, Heading, toast, usePrompt } from "@medusajs/ui"
-import { keepPreviousData } from "@tanstack/react-query"
 import { RowSelectionState, createColumnHelper } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
 
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { _DataTable } from "../../../../../components/table/data-table"
@@ -13,11 +11,10 @@ import {
   usePriceListLinkProducts,
   usePriceListProducts,
 } from "../../../../../hooks/api/price-lists"
-import { useProducts } from "../../../../../hooks/api/products"
 import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
-import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
 import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
+import { ExtendedAdminProduct } from "../../../../../types/products"
 
 type PriceListProductSectionProps = {
   priceList: HttpTypes.AdminPriceList
@@ -30,8 +27,6 @@ export const PriceListProductSection = ({
   priceList,
 }: PriceListProductSectionProps) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
-  const prompt = usePrompt()
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
@@ -45,7 +40,6 @@ export const PriceListProductSection = ({
     {
       limit: searchParams.limit?.toString() ?? PAGE_SIZE,
       offset: searchParams.offset?.toString() ?? 0,
-      fields: "+thumbnail",
     }
   )
 
@@ -87,6 +81,8 @@ export const PriceListProductSection = ({
                   label: t("priceLists.products.actions.editPrices"),
                   to: "products/edit",
                   icon: <PencilSquare />,
+                  disabled: count === 0,
+                  disabledTooltip: t("priceLists.products.actions.editPricesDisabled"),
                 },
               ],
             },
@@ -112,7 +108,7 @@ const ProductRowAction = ({
   product,
   priceList,
 }: {
-  product: HttpTypes.AdminProduct
+  product: ExtendedAdminProduct
   priceList: HttpTypes.AdminPriceList
 }) => {
   const { t } = useTranslation()
@@ -174,7 +170,7 @@ const ProductRowAction = ({
   )
 }
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<ExtendedAdminProduct>()
 
 const useColumns = (priceList: HttpTypes.AdminPriceList) => {
   const base = useProductTableColumns()

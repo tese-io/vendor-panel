@@ -1,9 +1,10 @@
-import { Avatar, Container, Heading, Text } from "@medusajs/ui"
+import { Container, Heading, Text } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 
 import { StoreVendor } from "../../../../../types/user"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { Pencil } from "@medusajs/icons"
+import { ImageAvatar } from "../../../../../components/common/image-avatar"
 
 export const StoreGeneralSection = ({ seller }: { seller: StoreVendor }) => {
   const { t } = useTranslation()
@@ -28,18 +29,11 @@ export const StoreGeneralSection = ({ seller }: { seller: StoreVendor }) => {
           ]}
         />
       </div>
-      <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4">
+      <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4 items-center">
         <Text size="small" leading="compact" weight="plus">
           Image
         </Text>
-        <div className="w-6 h-6">
-          <Avatar
-            size="small"
-            variant="rounded"
-            src={seller.photo || "/logo.svg"}
-            fallback={"/logo.svg"}
-          />
-        </div>
+        <ImageAvatar src={seller.photo || "/logo.svg"} size={8} rounded />
       </div>
       <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4">
         <Text size="small" leading="compact" weight="plus">

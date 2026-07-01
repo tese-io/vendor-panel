@@ -51,18 +51,33 @@ export const InviteUserForm = () => {
 
   const {
     invites,
-    count,
     isPending: isLoading,
     isError,
     error,
-  } = useInvites(searchParams)
+  } = useInvites({
+    limit: 9999,
+    order: searchParams.order,
+  })
+
+  const processedInvites = useMemo(() => {
+    if (searchParams?.q) {
+      return invites?.filter((invite) =>
+        invite.email
+          .toLowerCase()
+          .includes(searchParams?.q?.toLowerCase() ?? "")
+      )
+    }
+    return invites
+  }, [invites, searchParams])
+
+  const offset = searchParams.offset ?? 0
 
   const columns = useColumns()
 
   const { table } = useDataTable({
-    data: invites ?? [],
+    data: processedInvites?.slice(offset, offset + PAGE_SIZE) ?? [],
     columns,
-    count,
+    count: processedInvites?.length ?? 0,
     enablePagination: true,
     getRowId: (row) => row.id,
     pageSize: PAGE_SIZE,
@@ -152,7 +167,7 @@ export const InviteUserForm = () => {
                   <_DataTable
                     table={table}
                     columns={columns}
-                    count={count}
+                    count={processedInvites?.length ?? 0}
                     pageSize={PAGE_SIZE}
                     pagination
                     search="autofocus"

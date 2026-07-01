@@ -2,6 +2,7 @@ import { PencilSquare } from "@medusajs/icons"
 
 import { ActionMenu } from "../../../../components/common/action-menu"
 import { useTranslation } from "react-i18next"
+import { Request } from "../../../../types/request"
 
 const getRequestType = (type: string) => {
   switch (type) {
@@ -9,11 +10,13 @@ const getRequestType = (type: string) => {
       return "categories"
     case "product_collection":
       return "collections"
+    case "review_remove":
+      return "reviews"
     default:
       return ""
   }
 }
-export const RequestsActions = ({ request }: { request: any }) => {
+export const RequestsActions = ({ request }: { request: Request }) => {
   const { t } = useTranslation()
 
   const type = getRequestType(request.type)

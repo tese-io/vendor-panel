@@ -12,6 +12,11 @@ import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory, TQueryKey } from "../../lib/query-key-factory"
 import { inventoryItemsQueryKeys } from "./inventory"
 import { reservationItemsQueryKeys } from "./reservations"
+import { filterOrders } from "../../routes/orders/common/orderFiltering"
+import {
+  ExtendedAdminOrderResponse,
+  OrderCommission,
+} from "../../types/order"
 
 const ORDERS_QUERY_KEY = "orders" as const
 const _orderKeys = queryKeysFactory(ORDERS_QUERY_KEY) as TQueryKey<"orders"> & {
@@ -38,7 +43,12 @@ export const useOrder = (
   id: string,
   query?: Record<string, any>,
   options?: Omit<
-    UseQueryOptions<any, FetchError, any, QueryKey>,
+    UseQueryOptions<
+      ExtendedAdminOrderResponse,
+      FetchError,
+      ExtendedAdminOrderResponse,
+      QueryKey
+    >,
     "queryFn" | "queryKey"
   >
 ) => {
@@ -52,38 +62,28 @@ export const useOrder = (
     ...options,
   })
 
-  return { ...data, ...rest }
+  return { order: data?.order, ...rest }
 }
 
-export const useUpdateOrder = (
+export const useOrderCommission = (
   id: string,
-  options?: UseMutationOptions<
-    HttpTypes.AdminOrderResponse,
-    FetchError,
-    HttpTypes.AdminUpdateOrder
+  query?: Record<string, any>,
+  options?: Omit<
+    UseQueryOptions<OrderCommission, FetchError, OrderCommission, QueryKey>,
+    "queryFn" | "queryKey"
   >
 ) => {
-  return useMutation({
-    mutationFn: (payload: HttpTypes.AdminUpdateOrder) =>
-      sdk.admin.order.update(id, payload),
-    onSuccess: (data: any, variables: any, context: any) => {
-      queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.detail(id),
-      })
-
-      queryClient.invalidateQueries({
-        queryKey: ordersQueryKeys.changes(id),
-      })
-
-      // TODO: enable when needed
-      // queryClient.invalidateQueries({
-      //   queryKey: ordersQueryKeys.lists(),
-      // })
-
-      options?.onSuccess?.(data, variables, context)
-    },
+  const { data, ...rest } = useQuery({
+    queryFn: async () =>
+      fetchQuery(`/vendor/orders/${id}/commission`, {
+        method: "GET",
+        query,
+      }),
+    queryKey: ordersQueryKeys.detail(`${id}/commission`, query),
     ...options,
   })
+
+  return { commission: data?.commission, ...rest }
 }
 
 export const useOrderPreview = (
@@ -123,7 +123,7 @@ export const useOrders = (
     >,
     "queryFn" | "queryKey"
   >,
-  filters?: Record<string, string | number>
+  filters?: any
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () =>
@@ -135,16 +135,16 @@ export const useOrders = (
     ...options,
   })
 
-  if (!filters?.order_status) {
-    return { ...data, ...rest }
-  }
+  const filteredOrders =
+    filterOrders(data?.orders, filters, filters?.sort) || []
 
-  const filtered =
-    data?.orders.filter(
-      (order) => order.fulfillment_status === filters.order_status
-    ) || []
+  const filtered = filters?.order_status
+    ? filteredOrders.filter(
+        (order) => order.fulfillment_status === filters.order_status
+      )
+    : filteredOrders
 
-  const count = filtered.length || 0
+  const count = data?.count || 0
 
   return { count, orders: filtered, ...rest }
 }
@@ -340,6 +340,38 @@ export const useCancelOrder = (
 
       queryClient.invalidateQueries({
         queryKey: ordersQueryKeys.preview(orderId),
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.list(),
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
+export const useCompleteOrder = (
+  orderId: string,
+  options?: UseMutationOptions<HttpTypes.AdminOrderResponse, FetchError, void>
+) => {
+  return useMutation({
+    mutationFn: () =>
+      fetchQuery(`/vendor/orders/${orderId}/complete`, {
+        method: "POST",
+      }),
+    onSuccess: (data: any, variables: any, context: any) => {
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.detail(orderId),
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.list(),
       })
 
       options?.onSuccess?.(data, variables, context)

@@ -7,7 +7,6 @@ import {
   XMark,
 } from "@medusajs/icons"
 import {
-  Avatar,
   DropdownMenu,
   Heading,
   IconButton,
@@ -27,6 +26,7 @@ import { useLogout, useUserMe } from "../../../hooks/api"
 import { queryClient } from "../../../lib/query-client"
 import { useGlobalShortcuts } from "../../../providers/keybind-provider/hooks"
 import { useTheme } from "../../../providers/theme-provider"
+import { ImageAvatar } from "../../common/image-avatar"
 
 export const UserMenu = () => {
   const { t } = useTranslation()
@@ -100,14 +100,9 @@ const UserBadge = () => {
           "focus-visible:shadow-borders-focus"
         )}
       >
-        <div className="flex size-6 items-center justify-center">
+        <div className="flex size-7 items-center justify-center">
           {fallback ? (
-            <Avatar
-              size="small"
-              variant="rounded"
-              src={avatar || undefined}
-              fallback={fallback}
-            />
+            <ImageAvatar src={avatar || "/logo.svg"} size={7} rounded />
           ) : (
             <Skeleton className="h-6 w-6 rounded-full" />
           )}
@@ -293,7 +288,6 @@ const UserItem = () => {
 
   const name = member?.name || ""
   const email = member?.email || ""
-  const fallback = name ? name[0].toUpperCase() : email[0].toUpperCase()
   const avatar = member?.photo || ""
 
   if (isError) {
@@ -302,12 +296,9 @@ const UserItem = () => {
 
   return (
     <div className="flex items-center gap-x-3 overflow-hidden px-2 py-1">
-      <Avatar
-        size="small"
-        variant="rounded"
-        src={avatar || undefined}
-        fallback={fallback}
-      />
+      <div className="w-10">
+        <ImageAvatar src={avatar || "/logo.svg"} size={8} rounded />
+      </div>
       <div className="block w-full min-w-0 max-w-[187px] overflow-hidden whitespace-nowrap">
         <Text
           size="small"

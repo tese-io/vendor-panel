@@ -13,6 +13,19 @@ export const InventoryItemGeneralSection = ({
   inventoryItem,
 }: InventoryItemGeneralSectionProps) => {
   const { t } = useTranslation()
+
+  const stockedQuantity =
+    inventoryItem.location_levels?.reduce(
+      (acc, level) => acc + level.stocked_quantity,
+      0
+    ) || 0
+  const reservedQuantity =
+    inventoryItem.location_levels?.reduce(
+      (acc, level) => acc + level.reserved_quantity,
+      0
+    ) || 0
+  const availableQuantity = stockedQuantity - reservedQuantity
+
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
@@ -37,7 +50,7 @@ export const InventoryItemGeneralSection = ({
       <SectionRow
         title={t("fields.inStock")}
         value={getQuantityFormat(
-          inventoryItem.stocked_quantity,
+          stockedQuantity,
           inventoryItem.location_levels?.length
         )}
       />
@@ -45,14 +58,14 @@ export const InventoryItemGeneralSection = ({
       <SectionRow
         title={t("inventory.reserved")}
         value={getQuantityFormat(
-          inventoryItem.reserved_quantity,
+          reservedQuantity,
           inventoryItem.location_levels?.length
         )}
       />
       <SectionRow
         title={t("inventory.available")}
         value={getQuantityFormat(
-          inventoryItem.stocked_quantity - inventoryItem.reserved_quantity,
+          availableQuantity,
           inventoryItem.location_levels?.length
         )}
       />

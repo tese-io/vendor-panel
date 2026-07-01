@@ -12,9 +12,7 @@ import { useDashboardExtension } from "../../../extensions"
 export const PriceListDetails = () => {
   const { id } = useParams()
 
-  const { price_list, isLoading, isError, error } = usePriceList(id!, {
-    fields: "*products",
-  })
+  const { price_list, isLoading, isError, error } = usePriceList(id!)
 
   const { getWidgets } = useDashboardExtension()
 

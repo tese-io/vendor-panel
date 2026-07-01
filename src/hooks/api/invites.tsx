@@ -48,7 +48,11 @@ export const useInvites = (
   >
 ) => {
   const { data, ...rest } = useQuery({
-    queryFn: () => fetchQuery("/vendor/invites", { method: "GET" }),
+    queryFn: () =>
+      fetchQuery("/vendor/invites", {
+        method: "GET",
+        query: query,
+      }),
     queryKey: invitesQueryKeys.list(query),
     ...options,
   })
@@ -126,20 +130,20 @@ export const useAcceptInvite = (
   options?: UseMutationOptions<
     HttpTypes.AdminAcceptInviteResponse,
     FetchError,
-    HttpTypes.AdminAcceptInvite & { auth_token: string }
+    { name: string; auth_token: string }
   >
 ) => {
   return useMutation({
     mutationFn: (payload) => {
       const { auth_token, ...rest } = payload
 
-      return sdk.admin.invite.accept(
-        { invite_token: inviteToken, ...rest },
-        {},
-        {
-          Authorization: `Bearer ${auth_token}`,
-        }
-      )
+      return fetchQuery("/vendor/invites/accept", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${auth_token}`,
+        },
+        body: { token: inviteToken, ...rest },
+      })
     },
     onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context)

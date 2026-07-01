@@ -22,7 +22,7 @@ export const PriceListConfigurationSection = ({
       <div className="flex items-center justify-between">
         <div>
           <Heading level="h2">{t("priceLists.configuration.header")}</Heading>
-          {/* <CustomerGroupDisplay priceList={priceList} /> */}
+          <CustomerGroupDisplay priceList={priceList as any} />
         </div>
         <ActionMenu
           groups={[
@@ -38,7 +38,6 @@ export const PriceListConfigurationSection = ({
           ]}
         />
       </div>
-
       <DateRangeDisplay
         endsAt={priceList.ends_at}
         startsAt={priceList.starts_at}
@@ -51,18 +50,17 @@ export const PriceListConfigurationSection = ({
 const CustomerGroupDisplay = ({
   priceList,
 }: {
-  priceList: HttpTypes.AdminPriceList
+  priceList: HttpTypes.AdminPriceList & { price_list_rules: any[] }
 }) => {
   const { t } = useTranslation()
 
-  const customerGroupIds = priceList.rules.customer_group_id as
-    | string[]
-    | undefined
+  const customerGroupIds =
+    priceList.price_list_rules.find(
+      (rule) => rule.attribute === "customer.groups.id"
+    )?.value || ([] as string[])
 
-  const { customer_groups, isPending, isError, error } = useCustomerGroups(
-    {
-      id: customerGroupIds,
-    },
+  const { customer_groups: customerGroupsData, isPending, isError, error } = useCustomerGroups(
+    undefined,
     {
       enabled: !!customerGroupIds?.length,
     }
@@ -76,9 +74,14 @@ const CustomerGroupDisplay = ({
     return null
   }
 
-  if (isPending || !customer_groups) {
+  if (isPending || !customerGroupsData) {
     return <Skeleton className="h-5 w-full max-w-48" />
   }
+
+  const flatCustomerGroups = customerGroupsData.map((item) => item.customer_group)
+
+  const filteredCustomerGroups = flatCustomerGroups
+    .filter((group) => customerGroupIds.includes(group.id))
 
   return (
     <div className="txt-small-plus text-ui-fg-muted flex items-center gap-x-1.5">
@@ -87,7 +90,7 @@ const CustomerGroupDisplay = ({
       </span>
       <span>·</span>
       <ListSummary
-        list={customer_groups.map((group) => group.name!)}
+        list={filteredCustomerGroups.map((group) => group.name!)}
         n={1}
         className="txt-small-plus text-ui-fg-muted"
       />

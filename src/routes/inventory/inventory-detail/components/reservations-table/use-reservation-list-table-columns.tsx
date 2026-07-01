@@ -32,28 +32,16 @@ export const useReservationTableColumn = ({ sku }: { sku: string }) => {
           return <TextCell text={sku} />
         },
       }),
-      columnHelper.accessor("line_item.order_id", {
-        header: () => <TextHeader text={t("inventory.reservation.orderID")} />,
-        cell: ({ getValue, row }) => {
-          const orderId = getValue()
+      // columnHelper.accessor("line_item.order_id", {
+      //   header: () => <TextHeader text={t("inventory.reservation.orderID")} />,
+      //   cell: ({ getValue, row }) => {
+      //     const orderId = getValue()
 
-          if (!orderId) {
-            return <PlaceholderCell />
-          }
-
-          return <TextCell text={orderId} />
-        },
-      }),
-      // columnHelper.accessor("description", {
-      //   header: () => <TextHeader text={t("fields.description")} />,
-      //   cell: ({ getValue }) => {
-      //     const description = getValue()
-
-      //     if (!description) {
+      //     if (!orderId) {
       //       return <PlaceholderCell />
       //     }
 
-      //     return <TextCell text={description} />
+      //     return <TextCell text={orderId} />
       //   },
       // }),
       columnHelper.accessor("location.name", {

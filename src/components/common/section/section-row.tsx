@@ -1,13 +1,20 @@
-import { Text, clx } from "@medusajs/ui"
+import { InformationCircleSolid } from "@medusajs/icons"
+import { Text, Tooltip, clx } from "@medusajs/ui"
 import { ReactNode } from "react"
 
 export type SectionRowProps = {
   title: string
   value?: ReactNode | string | null
   actions?: ReactNode
+  tooltip?: string
 }
 
-export const SectionRow = ({ title, value, actions }: SectionRowProps) => {
+export const SectionRow = ({
+  title,
+  value,
+  actions,
+  tooltip,
+}: SectionRowProps) => {
   const isValueString = typeof value === "string" || !value
 
   return (
@@ -19,8 +26,18 @@ export const SectionRow = ({ title, value, actions }: SectionRowProps) => {
         }
       )}
     >
-      <Text size="small" weight="plus" leading="compact">
+      <Text
+        size="small"
+        weight="plus"
+        leading="compact"
+        className="flex items-center gap-x-2"
+      >
         {title}
+        {tooltip && (
+          <Tooltip content={tooltip}>
+            <InformationCircleSolid />
+          </Tooltip>
+        )}
       </Text>
 
       {isValueString ? (

@@ -109,8 +109,97 @@ export const useUpdateRequest = (
         queryKey: [REQUESTS_QUERY_KEY, "list"],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: requestsQueryKeys.detail(id),
+      })
+
       options?.onSuccess?.(data, variables, context)
     },
     ...options,
   })
+}
+
+export const useUpdateOrderReturnRequest = (id: string) => {
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetchQuery(`/vendor/return-request/${id}`, {
+        method: "POST",
+        body: payload,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [REQUESTS_QUERY_KEY, "return-request", id],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: [REQUESTS_QUERY_KEY, "return-requests"],
+      })
+    },
+  })
+}
+
+export const useOrderReturnRequest = (
+  id: string,
+  options?: UseQueryOptions<any, FetchError, any>
+) => {
+  const { data, ...rest } = useQuery({
+    queryKey: [REQUESTS_QUERY_KEY, "return-request", id],
+    queryFn: () =>
+      fetchQuery(`/vendor/return-request/${id}`, {
+        method: "GET",
+        query: { fields: "*order" },
+      }),
+    ...options,
+  })
+
+  return { ...data, ...rest }
+}
+
+export const useOrderReturnRequests = (
+  query?: Record<string, any>,
+  options?: Omit<
+    UseQueryOptions<
+      PaginatedResponse<{
+        order_return_request: any
+      }>,
+      FetchError,
+      PaginatedResponse<{
+        order_return_request: any
+      }>,
+      QueryKey
+    >,
+    "queryFn" | "queryKey"
+  >
+) => {
+  const { data, ...rest } = useQuery({
+    queryFn: () =>
+      fetchQuery("/vendor/return-request", {
+        method: "GET",
+        query: {
+          fields: "*order.customer,+created_at",
+        },
+      }),
+
+    queryKey: [REQUESTS_QUERY_KEY, "return-requests"],
+    ...options,
+  })
+
+  let processedData = data?.order_return_request
+
+  if (query?.limit) {
+    processedData = data?.order_return_request.slice(0, Number(query.limit))
+  }
+
+  if (query?.offset) {
+    processedData = data?.order_return_request.slice(
+      Number(query.offset),
+      Number(query.offset) + Number(query.limit)
+    )
+  }
+
+  return {
+    order_return_request: processedData,
+    count: data?.count || 0,
+    ...rest,
+  }
 }

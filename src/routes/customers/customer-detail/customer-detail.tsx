@@ -15,9 +15,15 @@ export const CustomerDetail = () => {
   const initialData = useLoaderData() as Awaited<
     ReturnType<typeof customerLoader>
   >
-  const { customer, isLoading, isError, error } = useCustomer(id!, undefined, {
-    initialData,
-  })
+  const { customer, isLoading, isError, error } = useCustomer(
+    id!,
+    {
+      fields: "*groups, *groups.customers",
+    },
+    {
+      initialData,
+    }
+  )
 
   const { getWidgets } = useDashboardExtension()
 

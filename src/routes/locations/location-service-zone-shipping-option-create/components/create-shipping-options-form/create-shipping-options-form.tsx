@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { HttpTypes } from "@medusajs/types"
+import { VendorExtendedAdminServiceZone } from "../../../../../types/stock-location"
 import { Button, ProgressStatus, ProgressTabs, toast } from "@medusajs/ui"
 import { useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -23,6 +24,7 @@ import {
   CreateShippingOptionSchema,
 } from "./schema"
 import { useFulfillmentProviderOptions } from "../../../../../hooks/api"
+import { useRegions } from "../../../../../hooks/api/regions"
 
 enum Tab {
   DETAILS = "details",
@@ -30,7 +32,7 @@ enum Tab {
 }
 
 type CreateShippingOptionFormProps = {
-  zone: HttpTypes.AdminServiceZone
+  zone: VendorExtendedAdminServiceZone
   locationId: string
   isReturn?: boolean
   type: FulfillmentSetType
@@ -74,6 +76,11 @@ export function CreateShippingOptionsForm({
       enabled: !!selectedProviderId,
     })
 
+  const { regions } = useRegions({
+    fields: "id,name,currency_code",
+    limit: 999,
+  })
+
   const isCalculatedPriceType =
     form.watch("price_type") === ShippingOptionPriceType.Calculated
 
@@ -89,9 +96,30 @@ export function CreateShippingOptionsForm({
         return {
           currency_code: code,
           amount: castNumber(value),
-        }
+          rules: [],
+        } as HttpTypes.AdminCreateShippingOptionPriceWithCurrency
       })
-      .filter((p): p is { currency_code: string; amount: number } => !!p)
+      .filter((p): p is HttpTypes.AdminCreateShippingOptionPriceWithCurrency => !!p)
+
+    const regionPrices = Object.entries(data.region_prices)
+      .map(([regionId, value]) => {
+        if (!value) {
+          return undefined
+        }
+
+        const region = regions?.find((r) => r.id === regionId)
+        
+        if (!region?.currency_code) {
+          return undefined
+        }
+
+        return {
+          currency_code: region.currency_code,
+          amount: castNumber(value),
+          rules: [],
+        } as HttpTypes.AdminCreateShippingOptionPriceWithCurrency
+      })
+      .filter((p): p is HttpTypes.AdminCreateShippingOptionPriceWithCurrency => !!p)
 
     const fulfillmentOptionData = fulfillmentProviderOptions?.find(
       (fo) => fo.id === data.fulfillment_option_id
@@ -103,8 +131,20 @@ export function CreateShippingOptionsForm({
         service_zone_id: zone.id,
         shipping_profile_id: data.shipping_profile_id,
         provider_id: data.provider_id,
-        prices: currencyPrices,
+        prices: [...currencyPrices, ...regionPrices],
         data: fulfillmentOptionData as unknown as Record<string, unknown>,
+        rules: [
+          {
+            value: isReturn ? "true" : "false",
+            attribute: "is_return",
+            operator: "eq",
+          },
+          {
+            value: "true",
+            attribute: "enabled_in_store",
+            operator: "eq",
+          },
+        ],
         type: {
           // TODO: FETCH TYPES
           label: "Type label",
@@ -253,9 +293,6 @@ export function CreateShippingOptionsForm({
                 zone={zone}
                 isReturn={isReturn}
                 type={type}
-                locationId={locationId}
-                fulfillmentProviderOptions={fulfillmentProviderOptions || []}
-                selectedProviderId={selectedProviderId}
               />
             </ProgressTabs.Content>
             <ProgressTabs.Content value={Tab.PRICING} className="size-full">

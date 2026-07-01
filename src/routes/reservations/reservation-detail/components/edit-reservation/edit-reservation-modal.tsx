@@ -18,12 +18,15 @@ export const ReservationEdit = () => {
   const { reservation, isPending, isError, error } = useReservationItem(id!)
   const { inventory_item: inventoryItem } = useInventoryItem(
     reservation?.inventory_item_id!,
+    undefined,
     {
-      enabled: !!reservation,
+      enabled: !!reservation?.inventory_item_id,
     }
   )
 
-  const { location_levels } = useInventoryItemLevels(inventoryItem?.id!)
+  const { location_levels } = useInventoryItemLevels(inventoryItem?.id!, undefined, {
+    enabled: !!inventoryItem?.id,
+  })
 
   const { stock_locations } = useStockLocations(
     undefined,
@@ -37,7 +40,7 @@ export const ReservationEdit = () => {
     }
   )
 
-  const ready = !isPending && reservation && inventoryItem && stock_locations
+  const ready = !isPending && reservation && inventoryItem && location_levels && stock_locations
   if (isError) {
     throw error
   }

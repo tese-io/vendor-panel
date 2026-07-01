@@ -1,7 +1,7 @@
 import { Badge, Button, Container, Heading, Text } from "@medusajs/ui"
 import { SingleColumnPage } from "../../../components/layout/pages"
 import { useDashboardExtension } from "../../../extensions"
-import { useRequests } from "../../../hooks/api"
+import { useOrderReturnRequests, useRequests } from "../../../hooks/api"
 import { TriangleRightMini } from "@medusajs/icons"
 import { Link } from "react-router-dom"
 
@@ -9,6 +9,7 @@ export const Requests = () => {
   const { getWidgets } = useDashboardExtension()
 
   const { requests, isError, error } = useRequests()
+  const { count } = useOrderReturnRequests()
 
   const categoryRequests =
     requests?.filter(
@@ -22,13 +23,11 @@ export const Requests = () => {
     requests?.filter(
       ({ type }: { type: string }) => type === "review_remove"
     ) ?? []
-  const ordersRequests =
-    requests?.filter(({ type }: { type: string }) => type === "orders") ?? []
 
   const categoryRequestCount = categoryRequests.length
   const collectionRequestCount = collectionRequests.length
   const reviewRequestCount = reviewRequests.length
-  const ordersRequestsCount = ordersRequests.length
+  const ordersRequestsCount = count
 
   if (isError) {
     throw error
@@ -82,7 +81,7 @@ export const Requests = () => {
             <Button variant="secondary" className="w-full justify-between py-4">
               <div className="flex gap-4 items-center">
                 <Badge>{ordersRequestsCount}</Badge>
-                Orders requests
+                Order return requests
               </div>
               <TriangleRightMini color="grey" />
             </Button>

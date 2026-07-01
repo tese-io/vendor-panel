@@ -12,6 +12,10 @@ const productDetailQuery = (id: string) => ({
   queryFn: async () =>
     fetchQuery(`/vendor/products/${id}`, {
       method: "GET",
+      query: {
+        fields:
+          "*variants.inventory_items,*categories,attribute_values.*,attribute_values.attribute.*",
+      },
     }),
 })
 

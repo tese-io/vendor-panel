@@ -93,7 +93,14 @@
   },
   "validation": {
     "mustBeInt": "The value must be a whole number.",
-    "mustBePositive": "The value must be a positive number."
+    "mustBePositive": "The value must be a positive number.",
+    "rules": {
+      "lower": "One lowercase letter",
+      "upper": "One uppercase letter",
+      "12chars": "At least 12 characters",
+      "digit": "At least one digit",
+      "specialChar": "At least one special character"
+    }
   },
   "actions": {
     "save": "Save",
@@ -396,7 +403,8 @@
   "products": {
     "domain": "Products",
     "list": {
-      "noRecordsMessage": "Create your first product to start selling."
+      "noRecordsTitle": "No products yet",
+      "noRecordsMessage": "Create products to start selling on the marketplace"
     },
     "edit": {
       "header": "Edit Product",
@@ -494,6 +502,11 @@
       "filtered": {
         "heading": "No results",
         "description": "No variants match the current filter criteria."
+      },
+      "editStocksAndPrices": {
+        "header": "Edit stock levels & prices",
+        "description": "Edit the stock levels and prices for the product variants.",
+        "successToast": "Stock levels and prices were successfully updated."
       }
     },
     "attributes": "Attributes",
@@ -507,6 +520,7 @@
       "uploadImagesLabel": "Upload images",
       "uploadImagesHint": "Drag and drop images here or click to upload.",
       "invalidFileType": "'{{name}}' is not a supported file type. Supported file types are: {{types}}.",
+      "fileTooLarge": "'{{name}}' exceeds the maximum file size of {{maxSize}}.",
       "failedToUpload": "Failed to upload the added media. Please try again.",
       "deleteWarning_one": "You are about to delete {{count}} image. This action cannot be undone.",
       "deleteWarning_other": "You are about to delete {{count}} images. This action cannot be undone.",
@@ -709,6 +723,12 @@
           "header": "Failed to delete product"
         }
       }
+    },
+    "bulkDelete": {
+      "title": "Delete Products",
+      "description": "You are about to delete {{count}} products from catalog. This action cannot be undone.",
+      "success": "Successfully deleted {{count}} product(s).",
+      "error": "Failed to delete products"
     }
   },
   "collections": {
@@ -2196,6 +2216,9 @@
       },
       "successToast": "Price list {{title}} was successfully created.",
       "products": {
+        "errors": {
+          "noProducts": "Please select at least one product."
+        },
         "list": {
           "noRecordsMessage": "Create a product first."
         }
@@ -2217,7 +2240,8 @@
       "header": "Products",
       "actions": {
         "addProducts": "Add products",
-        "editPrices": "Edit prices"
+        "editPrices": "Edit prices",
+        "editPricesDisabled": "Add products before editing prices"
       },
       "delete": {
         "confirmation_one": "You are about to delete the prices for {{count}} product in the price list. This action cannot be undone.",
@@ -2638,17 +2662,17 @@
   },
   "login": {
     "forgotPassword": "Forgot password? - <0>Reset</0>",
-    "title": "Welcome to Mercur Seller Panel",
+    "title": "Welcome to Tese Seller Panel",
     "hint": "Sign in to access the account area",
     "notSellerYet": "Not a seller yet? - <0>Create an account</0>"
   },
   "register": {
-    "title": "Join Mercur Seller Panel",
+    "title": "Join Tese Seller Panel",
     "hint": "Sign up to start selling",
     "alreadySeller": "Already have an account? - <0>Sign In</0>"
   },
   "invite": {
-    "title": "Welcome to Mercur Seller Panel",
+    "title": "Welcome to Tese Seller Panel",
     "hint": "Create your account below",
     "backToLogin": "Back to login",
     "createAccount": "Create account",
@@ -2656,8 +2680,8 @@
     "emailTooltip": "Your email cannot be changed. If you would like to use another email, a new invite must be sent.",
     "invalidInvite": "The invite is invalid or has expired.",
     "successTitle": "Your account has been registered",
-    "successHint": "Get started with Medusa Admin right away.",
-    "successAction": "Start Medusa Admin",
+    "successHint": "Get started with the Tese seller panel right away.",
+    "successAction": "Open seller panel",
     "invalidTokenTitle": "Your invite token is invalid",
     "invalidTokenHint": "Try requesting a new invite link.",
     "passwordMismatch": "Passwords do not match",
@@ -2931,6 +2955,8 @@
     "expiryDate": "Expiry date",
     "price": "Price",
     "priceTemplate": "Price {{regionOrCurrency}}",
+    "currentPriceTemplate": "Current price {{regionOrCurrency}}",
+    "stockTemplate": "Stock Location {{stockLocation}}",
     "height": "Height",
     "width": "Width",
     "length": "Length",

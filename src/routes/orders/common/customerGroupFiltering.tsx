@@ -1,10 +1,11 @@
 import { HttpTypes } from "@medusajs/types"
 
-type CustomerGroupData = {
+export type CustomerGroupData = {
   customer_group_id: string
   customer_group: HttpTypes.AdminCustomerGroup
 }
 
+type SortField = "name" | "created_at" | "updated_at"
 type SortDirection = "asc" | "desc"
 
 const getSymbol = (a: string | Date, symbol: string, b: string | Date) => {
@@ -31,7 +32,7 @@ const isString = (value: unknown): value is string => {
 
 const sortCustomerGroups = (
   groups: CustomerGroupData[],
-  sortField: keyof HttpTypes.AdminCustomerGroup,
+  sortField: SortField,
   direction: SortDirection
 ) => {
   return [...groups].sort((a, b) => {
@@ -46,7 +47,7 @@ const sortCustomerGroups = (
         : bValue.localeCompare(aValue)
     }
 
-    // For dates
+    // For dates (created_at and updated_at)
     if (isString(aValue) && isString(bValue)) {
       const dateA = new Date(aValue)
       const dateB = new Date(bValue)
@@ -60,7 +61,7 @@ const sortCustomerGroups = (
 }
 
 export const filterCustomerGroups = (
-  groups?: any[],
+  groups?: CustomerGroupData[] | undefined,
   filters?: Record<string, Record<string, string | Date>>,
   sort?: string
 ) => {
@@ -70,10 +71,13 @@ export const filterCustomerGroups = (
     // Ensure the group has a customer_group property
     if (!group.customer_group) return false
 
-    return Object.keys(filters).every((key: string) => {
+    return Object.keys(filters).every((key) => {
       if (!filters[key]) return true
 
-      const groupValue = group.customer_group[key]
+      // Type guard to ensure key is a valid SortField
+      if (!["name", "created_at", "updated_at"].includes(key)) return true
+
+      const groupValue = group.customer_group[key as SortField]
       if (!groupValue) return false
 
       if (key === "created_at" || key === "updated_at") {
@@ -101,7 +105,7 @@ export const filterCustomerGroups = (
     if (["name", "created_at", "updated_at"].includes(field)) {
       filteredGroups = sortCustomerGroups(
         filteredGroups,
-        field as keyof HttpTypes.AdminCustomerGroup,
+        field as SortField,
         direction as SortDirection
       )
     }
