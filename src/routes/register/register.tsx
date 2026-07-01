@@ -105,7 +105,7 @@ export const Register = () => {
 
   if (success)
     return (
-      <div className="flex min-h-dvh w-dvw items-center justify-center bg-ui-bg-subtle">
+      <div className="tese-auth-page flex min-h-dvh w-dvw items-center justify-center">
         <div className="mb-4 flex flex-col items-center">
           <Heading>Thank You for registering!</Heading>
           <Text
@@ -124,8 +124,8 @@ export const Register = () => {
     );
 
   return (
-    <div className="flex min-h-dvh w-dvw items-center justify-center bg-ui-bg-subtle">
-      <div className="m-4 flex w-full max-w-[280px] flex-col items-center">
+    <div className="tese-auth-page flex min-h-dvh w-dvw items-center justify-center">
+      <div className="tese-auth-card m-4 flex flex-col items-center">
         <AvatarBox />
         <div className="mb-4 flex flex-col items-center">
           <Heading>{t('register.title')}</Heading>
@@ -233,7 +233,7 @@ export const Register = () => {
                 </Alert>
               )}
               <Button
-                className="w-full"
+                className="tese-btn-primary w-full"
                 type="submit"
                 isLoading={isPending}
               >

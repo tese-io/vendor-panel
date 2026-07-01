@@ -290,7 +290,7 @@ const MercurConnectSection = () => {
       </div>
       <div className="flex flex-col gap-y-1 py-3">
         <NavItem
-          label="Mercur Connect"
+          label="Integrations"
           to="/mercur-connect"
           icon={<MercurConnect />}
         />

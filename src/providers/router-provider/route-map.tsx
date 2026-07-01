@@ -1595,6 +1595,10 @@ export const RouteMap: RouteObject[] = [
             lazy: () => import('../../routes/login')
           },
           {
+            path: '/login/sso-callback',
+            lazy: () => import('../../routes/sso-callback')
+          },
+          {
             path: '/register',
             lazy:
               __DISABLE_SELLERS_REGISTRATION__ === 'false'

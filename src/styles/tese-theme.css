@@ -1,0 +1,79 @@
+/* Tese marketplace design tokens — aligned with b2c-marketplace-storefront colors.css */
+
+:root {
+  --tese-lime: 187, 219, 72;
+  --tese-lime-soft: 225, 255, 110;
+  --tese-ink: 0, 20, 5;
+  --tese-ink-soft: 10, 45, 0;
+  --tese-ice: 29, 98, 93;
+  --tese-ice-soft: 144, 213, 208;
+  --tese-surface: 242, 242, 242;
+
+  /* Medusa UI light theme overrides */
+  --fg-interactive: rgba(var(--tese-ice), 1);
+  --fg-interactive-hover: rgba(var(--tese-ink-soft), 1);
+  --border-interactive: rgba(var(--tese-lime), 1);
+  --bg-interactive: rgba(var(--tese-ink), 1);
+  --bg-highlight: rgba(var(--tese-lime-soft), 0.35);
+  --bg-highlight-hover: rgba(var(--tese-lime-soft), 0.55);
+  --bg-subtle: rgba(var(--tese-surface), 1);
+  --bg-subtle-hover: rgba(238, 238, 238, 1);
+  --button-inverted: rgba(var(--tese-ink), 1);
+  --button-inverted-hover: rgba(var(--tese-ink-soft), 1);
+  --button-inverted-pressed: rgba(34, 66, 0, 1);
+  --contrast-bg-base: rgba(var(--tese-ink), 1);
+  --contrast-bg-base-hover: rgba(var(--tese-ink-soft), 1);
+}
+
+.dark {
+  --fg-interactive: rgba(var(--tese-lime), 1);
+  --fg-interactive-hover: rgba(var(--tese-lime-soft), 1);
+  --border-interactive: rgba(var(--tese-lime), 0.6);
+  --bg-interactive: rgba(var(--tese-lime), 1);
+  --bg-highlight: rgba(var(--tese-ink-soft), 1);
+  --bg-highlight-hover: rgba(var(--tese-ink), 1);
+  --button-inverted: rgba(var(--tese-lime), 1);
+  --button-inverted-hover: rgba(var(--tese-lime-soft), 1);
+  --button-inverted-pressed: rgba(149, 181, 34, 1);
+  --contrast-bg-base: rgba(var(--tese-lime), 1);
+}
+
+.tese-auth-page {
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(var(--tese-ice), 0.12) 0%, transparent 45%),
+    radial-gradient(90% 90% at 0% 100%, rgba(var(--tese-lime), 0.14) 0%, transparent 50%),
+    rgb(var(--tese-surface));
+}
+
+.tese-auth-card {
+  width: 100%;
+  max-width: 320px;
+}
+
+.tese-auth-logo {
+  width: 48px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.tese-btn-primary {
+  background-color: rgb(var(--tese-lime)) !important;
+  color: rgb(var(--tese-ink)) !important;
+  border: none !important;
+}
+
+.tese-btn-primary:hover {
+  background-color: rgb(var(--tese-lime-soft)) !important;
+}
+
+.tese-btn-primary:disabled {
+  opacity: 0.55;
+}
+
+.tese-link {
+  color: rgb(var(--tese-ice));
+}
+
+.tese-link:hover {
+  color: rgb(var(--tese-ink-soft));
+}
