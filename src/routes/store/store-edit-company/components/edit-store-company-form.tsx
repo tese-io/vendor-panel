@@ -26,6 +26,17 @@ const EditStoreSchema = z.object({
   website: z
     .string()
     .url("Enter a full URL, e.g. https://example.com")
+    .refine(
+      (value) => {
+        try {
+          const { protocol } = new URL(value)
+          return protocol === "http:" || protocol === "https:"
+        } catch {
+          return false
+        }
+      },
+      { message: "Website must start with http:// or https://" }
+    )
     .optional()
     .or(z.literal("")),
   company_type: z.string().optional(),

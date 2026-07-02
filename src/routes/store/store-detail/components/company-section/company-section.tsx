@@ -2,6 +2,7 @@ import { Container, Heading, Text } from "@medusajs/ui"
 import { StoreVendor } from "../../../../../types/user"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { Pencil } from "@medusajs/icons"
+import { safeExternalHref } from "../../../../../lib/safe-url"
 
 export const CompanySection = ({ seller }: { seller: StoreVendor }) => {
   return (
@@ -72,9 +73,9 @@ export const CompanySection = ({ seller }: { seller: StoreVendor }) => {
           Website
         </Text>
         <Text size="small" leading="compact">
-          {seller.website ? (
+          {safeExternalHref(seller.website) ? (
             <a
-              href={seller.website}
+              href={safeExternalHref(seller.website)}
               target="_blank"
               rel="noreferrer"
               className="text-ui-fg-interactive hover:underline"
@@ -82,7 +83,7 @@ export const CompanySection = ({ seller }: { seller: StoreVendor }) => {
               {seller.website}
             </a>
           ) : (
-            "-"
+            seller.website || "-"
           )}
         </Text>
       </div>
