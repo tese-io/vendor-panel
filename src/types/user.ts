@@ -28,6 +28,9 @@ export interface StoreVendor {
   city?: string
   country_code?: string
   tax_id?: string
+  website?: string
+  company_type?: string
+  is_verified?: boolean
   store_status?: "ACTIVE" | "SUSPENDED" | "INACTIVE"
 }
 

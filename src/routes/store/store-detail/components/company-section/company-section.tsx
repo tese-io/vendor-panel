@@ -67,6 +67,35 @@ export const CompanySection = ({ seller }: { seller: StoreVendor }) => {
           {seller.tax_id || "-"}
         </Text>
       </div>
+      <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4">
+        <Text size="small" leading="compact" weight="plus">
+          Website
+        </Text>
+        <Text size="small" leading="compact">
+          {seller.website ? (
+            <a
+              href={seller.website}
+              target="_blank"
+              rel="noreferrer"
+              className="text-ui-fg-interactive hover:underline"
+            >
+              {seller.website}
+            </a>
+          ) : (
+            "-"
+          )}
+        </Text>
+      </div>
+      <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4">
+        <Text size="small" leading="compact" weight="plus">
+          Company type
+        </Text>
+        <Text size="small" leading="compact">
+          {seller.company_type
+            ? seller.company_type.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase())
+            : "-"}
+        </Text>
+      </div>
     </Container>
   )
 }
