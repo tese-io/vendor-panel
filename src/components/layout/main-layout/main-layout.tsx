@@ -15,7 +15,7 @@ import {
   Users
 } from '@medusajs/icons';
 import { clx, Divider, Text } from '@medusajs/ui';
-import { useUnreads } from '@talkjs/react';
+import { useMatrixUnreads } from '../../../providers/matrix-provider';
 import { Collapsible as RadixCollapsible } from 'radix-ui';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
@@ -104,7 +104,7 @@ const Header = () => {
 const useCoreRoutes = (): Omit<INavItem, 'pathname'>[] => {
   const { t } = useTranslation();
 
-  const unreadMessages = useUnreads();
+  const unreadCount = useMatrixUnreads();
 
   return [
     {
@@ -129,6 +129,10 @@ const useCoreRoutes = (): Omit<INavItem, 'pathname'>[] => {
       label: t('products.domain'),
       to: '/products',
       items: [
+        {
+          label: 'Services',
+          to: '/services'
+        },
         {
           label: t('collections.domain'),
           to: '/collections'
@@ -189,8 +193,13 @@ const useCoreRoutes = (): Omit<INavItem, 'pathname'>[] => {
     },
     {
       icon: <ChatBubbleLeftRight />,
-      label: `Messages ${unreadMessages?.length && unreadMessages?.length > 0 ? `(${unreadMessages?.length})` : ''}`,
+      label: `Messages ${unreadCount > 0 ? `(${unreadCount})` : ''}`,
       to: '/messages'
+    },
+    {
+      icon: <ReceiptPercent />,
+      label: 'Quote requests',
+      to: '/quotes'
     },
     {
       icon: <ListCheckbox />,
