@@ -78,11 +78,11 @@ export const Login = () => {
     form.formState.errors.password?.message
 
   return (
-    <div className="bg-ui-bg-subtle flex min-h-dvh w-dvw items-center justify-center">
-      <div className="m-4 flex w-full max-w-[280px] flex-col items-center">
+    <div className="tese-auth-page flex min-h-dvh w-dvw items-center justify-center">
+      <div className="tese-auth-card m-4 flex flex-col items-center">
         <AvatarBox />
         <div className="mb-4 flex flex-col items-center">
-          <Heading>{t("login.title")}</Heading>
+          <Heading className="text-[rgb(var(--tese-ink))]">{t("login.title")}</Heading>
           <Text size="small" className="text-ui-fg-subtle text-center">
             {t("login.hint")}
           </Text>
@@ -153,7 +153,7 @@ export const Login = () => {
                   {serverError}
                 </Alert>
               )}
-              <Button className="w-full" type="submit" isLoading={isPending}>
+              <Button className="tese-btn-primary w-full" type="submit" isLoading={isPending}>
                 Sign In
               </Button>
             </form>
@@ -169,7 +169,7 @@ export const Login = () => {
               <Link
                 key="reset-password-link"
                 to="/reset-password"
-                className="text-ui-fg-interactive transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover font-medium outline-none"
+                className="tese-link transition-fg font-medium outline-none"
               />,
             ]}
           />
@@ -181,7 +181,7 @@ export const Login = () => {
               components={[
                 <Link
                   to="/register"
-                  className="text-ui-fg-interactive transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover font-medium outline-none"
+                  className="tese-link transition-fg font-medium outline-none"
                 />,
               ]}
             />

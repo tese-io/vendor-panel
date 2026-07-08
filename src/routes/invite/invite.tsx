@@ -50,7 +50,7 @@ export const Invite = () => {
   const isValidInvite = invite && validateDecodedInvite(invite)
 
   return (
-    <div className="bg-ui-bg-subtle relative flex min-h-dvh w-dvw items-center justify-center p-4">
+    <div className="tese-auth-page relative flex min-h-dvh w-dvw items-center justify-center p-4">
       <div className="flex w-full max-w-[360px] flex-col items-center">
         <AvatarBox checked={success} />
         <div className="max-h-[557px] w-full will-change-contents">

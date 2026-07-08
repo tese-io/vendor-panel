@@ -2,6 +2,7 @@ import { Container, Heading, Text } from "@medusajs/ui"
 import { StoreVendor } from "../../../../../types/user"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { Pencil } from "@medusajs/icons"
+import { safeExternalHref } from "../../../../../lib/safe-url"
 
 export const CompanySection = ({ seller }: { seller: StoreVendor }) => {
   return (
@@ -65,6 +66,35 @@ export const CompanySection = ({ seller }: { seller: StoreVendor }) => {
         </Text>
         <Text size="small" leading="compact">
           {seller.tax_id || "-"}
+        </Text>
+      </div>
+      <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4">
+        <Text size="small" leading="compact" weight="plus">
+          Website
+        </Text>
+        <Text size="small" leading="compact">
+          {safeExternalHref(seller.website) ? (
+            <a
+              href={safeExternalHref(seller.website)}
+              target="_blank"
+              rel="noreferrer"
+              className="text-ui-fg-interactive hover:underline"
+            >
+              {seller.website}
+            </a>
+          ) : (
+            seller.website || "-"
+          )}
+        </Text>
+      </div>
+      <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4">
+        <Text size="small" leading="compact" weight="plus">
+          Company type
+        </Text>
+        <Text size="small" leading="compact">
+          {seller.company_type
+            ? seller.company_type.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase())
+            : "-"}
         </Text>
       </div>
     </Container>

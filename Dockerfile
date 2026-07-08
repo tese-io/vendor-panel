@@ -36,5 +36,5 @@ WORKDIR /app
 
 EXPOSE 7000
 
-# Serve static files
-CMD ["serve", "-s", ".", "-l", "7000"]
+# Serve static files (Railway injects PORT)
+CMD ["sh", "-c", "serve -s . -l ${PORT:-7000}"]
