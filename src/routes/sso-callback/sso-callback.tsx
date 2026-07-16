@@ -25,7 +25,7 @@ export const SSOCallback = () => {
 
     const key = params.get("key")
     if (!key) {
-      setError("Missing SSO key")
+      navigate("/login?reason=sso_missing_key", { replace: true })
       return
     }
 
@@ -37,7 +37,7 @@ export const SSOCallback = () => {
           sso_key: key,
         })
         if (typeof token !== "string") {
-          setError("Unexpected SSO response")
+          navigate("/login?reason=sso_failed", { replace: true })
           return
         }
 
@@ -51,6 +51,7 @@ export const SSOCallback = () => {
         navigate("/dashboard", { replace: true })
       } catch (e: any) {
         setError(e?.message || "SSO login failed")
+        navigate("/login?reason=sso_failed", { replace: true })
       }
     })()
   }, [navigate, params])

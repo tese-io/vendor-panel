@@ -1,7 +1,9 @@
 import Medusa from '@medusajs/js-sdk';
 
-export const backendUrl = __BACKEND_URL__ ?? '/';
-export const publishableApiKey = __PUBLISHABLE_API_KEY__ ?? '';
+export const backendUrl =
+  import.meta.env.VITE_MEDUSA_BACKEND_URL || '/';
+export const publishableApiKey =
+  import.meta.env.VITE_PUBLISHABLE_API_KEY || '';
 
 const token = window.localStorage.getItem('medusa_auth_token') || '';
 
