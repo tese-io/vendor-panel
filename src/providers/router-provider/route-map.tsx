@@ -1004,6 +1004,15 @@ export const RouteMap: RouteObject[] = [
             ]
           },
           {
+            // P3.3/P3.4 — sellers declare which sustainability activities they cover
+            path: 'activities-served',
+            errorElement: <ErrorBoundary />,
+            lazy: () => import('../../routes/settings/activities-served'),
+            handle: {
+              breadcrumb: () => 'Activities I serve'
+            }
+          },
+          {
             path: 'users',
             errorElement: <ErrorBoundary />,
             element: <Outlet />,

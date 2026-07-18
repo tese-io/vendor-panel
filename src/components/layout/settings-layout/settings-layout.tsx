@@ -44,6 +44,11 @@ const useSettingRoutes = (): INavItem[] => {
         label: t("stockLocations.domain"),
         to: "/settings/locations",
       },
+      // P3.3/P3.4 — sellers declare what sustainability activities they cover
+      {
+        label: "Activities I serve",
+        to: "/settings/activities-served",
+      },
     ],
     [t]
   )
