@@ -197,6 +197,8 @@ export const ActivitiesServed = () => {
     <SingleColumnPage
       showMetadata={false}
       showJSON={false}
+      widgets={{ before: [], after: [] }}
+      hasOutlet={false}
     >
       <Container className="p-0 divide-y divide-ui-border-base">
         <div className="px-6 py-4">
