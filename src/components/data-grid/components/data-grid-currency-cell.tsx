@@ -27,7 +27,13 @@ export const DataGridCurrencyCell = <TData, TValue = any>({
 
   const { container, input } = renderProps
 
-  const currency = currencies[code.toUpperCase()]
+  const upper = code.toUpperCase()
+  const currency: CurrencyInfo = currencies[upper] ?? {
+    code: upper,
+    name: upper,
+    symbol_native: upper,
+    decimal_digits: 2,
+  }
 
   return (
     <Controller
