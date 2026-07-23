@@ -1013,6 +1013,15 @@ export const RouteMap: RouteObject[] = [
             }
           },
           {
+            // Sellers attach sustainability certifications from shared catalog
+            path: 'certifications',
+            errorElement: <ErrorBoundary />,
+            lazy: () => import('../../routes/settings/certifications/certifications'),
+            handle: {
+              breadcrumb: () => 'Certifications'
+            }
+          },
+          {
             path: 'users',
             errorElement: <ErrorBoundary />,
             element: <Outlet />,

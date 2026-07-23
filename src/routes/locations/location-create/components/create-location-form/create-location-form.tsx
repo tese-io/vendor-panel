@@ -5,12 +5,19 @@ import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 import { Form } from "../../../../../components/common/form"
 import { CountrySelect } from "../../../../../components/inputs/country-select"
+import { MapPinPicker } from "../../../../../components/common/map-pin-picker/map-pin-picker"
 import {
   RouteFocusModal,
   useRouteModal,
 } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCreateStockLocation } from "../../../../../hooks/api/stock-locations"
+
+const GeoSchema = zod.object({
+  latitude: zod.number().min(-90).max(90),
+  longitude: zod.number().min(-180).max(180),
+  location_precision: zod.enum(["map_pinned", "geocoded", "country_centroid"]),
+})
 
 const CreateLocationSchema = zod.object({
   name: zod.string().min(1),
@@ -24,6 +31,7 @@ const CreateLocationSchema = zod.object({
     company: zod.string().optional(),
     phone: zod.string().optional(),
   }),
+  geo: GeoSchema,
 })
 
 export const CreateLocationForm = () => {
@@ -43,6 +51,7 @@ export const CreateLocationForm = () => {
         postal_code: "",
         province: "",
       },
+      geo: undefined,
     },
     resolver: zodResolver(CreateLocationSchema),
   })
@@ -54,7 +63,8 @@ export const CreateLocationForm = () => {
       {
         name: values.name,
         address: values.address,
-      },
+        geo: values.geo,
+      } as unknown as Parameters<typeof mutateAsync>[0],
       {
         onSuccess: ({ stock_location }) => {
           toast.success(t("locations.toast.create"))
@@ -220,6 +230,27 @@ export const CreateLocationForm = () => {
                         <Form.Label optional>{t("fields.phone")}</Form.Label>
                         <Form.Control>
                           <Input size="small" {...field} />
+                        </Form.Control>
+                        <Form.ErrorMessage />
+                      </Form.Item>
+                    )
+                  }}
+                />
+              </div>
+              <div>
+                <Form.Field
+                  control={form.control}
+                  name="geo"
+                  render={({ field }) => {
+                    return (
+                      <Form.Item>
+                        <Form.Label>Pin your warehouse location</Form.Label>
+                        <Form.Control>
+                          <MapPinPicker
+                            value={field.value}
+                            onChange={(v) => field.onChange(v)}
+                            helpText="This is the shipping origin used for distance and delivery-carbon estimates"
+                          />
                         </Form.Control>
                         <Form.ErrorMessage />
                       </Form.Item>
