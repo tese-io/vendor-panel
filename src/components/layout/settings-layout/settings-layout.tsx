@@ -49,6 +49,11 @@ const useSettingRoutes = (): INavItem[] => {
         label: "Activities I serve",
         to: "/settings/activities-served",
       },
+      // Sellers attach sustainability certifications from shared catalog
+      {
+        label: "Certifications",
+        to: "/settings/certifications",
+      },
     ],
     [t]
   )
