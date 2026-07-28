@@ -1,9 +1,15 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { Container, Heading, Text, Badge } from "@medusajs/ui"
+import { ChevronDownMini, ChevronRight } from "@medusajs/icons"
 import { Link } from "react-router-dom"
 import { SingleColumnPage } from "../../../components/layout/pages/single-column-page"
 import { useAllSellerCoverage } from "../../../hooks/api/vendor-coverage"
-import { groupByActivity, type GroupedActivity } from "./helpers"
+import {
+  groupByActivity,
+  groupByCategory,
+  type CategoryGroup,
+  type GroupedActivity,
+} from "./helpers"
 
 /**
  * Settings → Coverage Overview.
@@ -56,6 +62,18 @@ const ActivityCard = ({ group }: { group: GroupedActivity }) => {
   const sellerRows = group.rows.filter((r) => r.subject_kind === "seller")
   const productRows = group.rows.filter((r) => r.subject_kind === "product")
 
+  // Hide the seller-level sub-row section when it would just repeat the
+  // top-level "You declared" badge verbatim. Concretely: there's exactly
+  // one seller row and it's the self_declared one that already drove the
+  // header badge. Any admin_curated / ai_classified seller row OR any
+  // second row still shows in the sub-row list — those carry information
+  // (source variant, coverage_kind INDIRECT, etc.) that the summary badge
+  // doesn't convey.
+  const suppressSellerSubRows =
+    sellerRows.length === 1 &&
+    sellerRows[0].source === "self_declared" &&
+    sellerRows[0].coverage_kind !== "INDIRECT"
+
   return (
     <div className="px-6 py-4 border-b border-ui-border-base last:border-0">
       <div className="flex items-start justify-between gap-3 mb-2">
@@ -87,8 +105,8 @@ const ActivityCard = ({ group }: { group: GroupedActivity }) => {
         </div>
       </div>
 
-      {/* Seller-level source rows */}
-      {sellerRows.length > 0 && (
+      {/* Seller-level source rows (skipped when redundant with the header badge) */}
+      {sellerRows.length > 0 && !suppressSellerSubRows && (
         <div className="pl-4 border-l-2 border-ui-border-base mt-2">
           {sellerRows.map((r, idx) => {
             const src = sourceMeta(r.source)
@@ -154,6 +172,69 @@ const ActivityCard = ({ group }: { group: GroupedActivity }) => {
 }
 
 // ─────────────────────────────────────────────────────────────────────
+// Category section — collapsible group of activity cards sharing a
+// prefix (e.g. all ADAC-* activities land under "Climate Adaptation").
+// ─────────────────────────────────────────────────────────────────────
+
+const CategorySection = ({
+  category,
+  defaultOpen = true,
+}: {
+  category: CategoryGroup
+  defaultOpen?: boolean
+}) => {
+  const [open, setOpen] = useState(defaultOpen)
+
+  return (
+    <div className="border-b border-ui-border-base last:border-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center gap-3 px-6 py-3 text-left hover:bg-ui-bg-base-hover transition-colors"
+        aria-expanded={open}
+      >
+        <span className="text-ui-fg-subtle shrink-0" aria-hidden>
+          {open ? <ChevronDownMini /> : <ChevronRight />}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="text-sm font-medium text-ui-fg-base">
+            {category.category_label}
+          </div>
+          {category.category_label !== category.category_code && (
+            <div className="font-mono text-xs text-ui-fg-muted mt-0.5">
+              {category.category_code}-*
+            </div>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+          <Badge size="2xsmall" color="grey">
+            {category.totalActivities}{" "}
+            {category.totalActivities === 1 ? "activity" : "activities"}
+          </Badge>
+          {category.totalSelfDeclared > 0 && (
+            <Badge size="2xsmall" color="green">
+              {category.totalSelfDeclared} declared
+            </Badge>
+          )}
+          {category.totalViaProductsOnly > 0 && (
+            <Badge size="2xsmall" color="blue">
+              {category.totalViaProductsOnly} via products
+            </Badge>
+          )}
+        </div>
+      </button>
+      {open && (
+        <div className="border-t border-ui-border-base bg-ui-bg-subtle">
+          {category.activities.map((g) => (
+            <ActivityCard key={g.activity_code} group={g} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────────────────────────────
 
@@ -162,6 +243,7 @@ export const CoverageOverview = () => {
 
   const rows = data?.rows || []
   const groups = useMemo(() => groupByActivity(rows), [rows])
+  const categories = useMemo(() => groupByCategory(groups), [groups])
 
   const totalActivities = groups.length
   const declaredCount = groups.filter((g) => g.hasSelfDeclared).length
@@ -225,8 +307,8 @@ export const CoverageOverview = () => {
               , or publish products so the classifier can tag them for you.
             </div>
           )}
-          {groups.map((g) => (
-            <ActivityCard key={g.activity_code} group={g} />
+          {categories.map((c) => (
+            <CategorySection key={c.category_code} category={c} />
           ))}
         </div>
       </Container>
