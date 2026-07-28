@@ -53,6 +53,40 @@ export const useSellerCoverage = (
   })
 }
 
+// Consolidated coverage row (subject_kind + product context flattened).
+// Sourced from GET /vendor/coverage/all — different shape than CoverageRow
+// because Mercur enriches product-level rows with their originating
+// product_title so the seller sees WHICH product triggered the surfacing.
+export type AllCoverageRow = {
+  _id?: string
+  subject_kind: "seller" | "product"
+  product_id: string | null
+  product_title: string | null
+  activity_code: string
+  coverage_kind: "DIRECT" | "INDIRECT"
+  source: string
+  confidence: number
+  is_active: boolean
+}
+
+/**
+ * All coverage rows for the current seller — union of seller-declared and
+ * product-classified rows. Backs the Settings → Coverage Overview page,
+ * which is read-only (adds/removes still go through /vendor/coverage).
+ */
+export const useAllSellerCoverage = (
+  options?: Omit<
+    UseQueryOptions<{ rows: AllCoverageRow[]; count: number }, FetchError, { rows: AllCoverageRow[]; count: number }, any>,
+    "queryFn" | "queryKey"
+  >
+) => {
+  return useQuery({
+    queryKey: [...KEY, "all"] as const,
+    queryFn: () => fetchQuery("/vendor/coverage/all", { method: "GET" }),
+    ...options,
+  })
+}
+
 /** Autocomplete activity codes. Sellers pick from these to add coverage. */
 export const useActivitySearch = (
   q: string,
