@@ -1013,6 +1013,16 @@ export const RouteMap: RouteObject[] = [
             }
           },
           {
+            // Read-only union of self-declared + product-classified rows,
+            // so sellers can see every activity they're being surfaced for.
+            path: 'coverage-overview',
+            errorElement: <ErrorBoundary />,
+            lazy: () => import('../../routes/settings/coverage-overview'),
+            handle: {
+              breadcrumb: () => 'Coverage overview'
+            }
+          },
+          {
             // Sellers attach sustainability certifications from shared catalog
             path: 'certifications',
             errorElement: <ErrorBoundary />,

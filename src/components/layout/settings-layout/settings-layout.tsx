@@ -49,6 +49,13 @@ const useSettingRoutes = (): INavItem[] => {
         label: "Activities I serve",
         to: "/settings/activities-served",
       },
+      // Consolidated read-only view: what am I being surfaced for + why.
+      // Unions self-declared + product-classified rows so sellers can audit
+      // the full set (product classifications used to be invisible).
+      {
+        label: "Coverage overview",
+        to: "/settings/coverage-overview",
+      },
       // Sellers attach sustainability certifications from shared catalog
       {
         label: "Certifications",
