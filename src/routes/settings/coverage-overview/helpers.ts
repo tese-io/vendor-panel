@@ -30,6 +30,97 @@ export type GroupedActivity = {
  *      declarations are highest priority).
  *   2. Within each tier, activity_code alphabetical.
  */
+/**
+ * Known category prefixes → human labels. Fallbacks to the raw prefix
+ * when we hit a code we don't have a friendly name for, so unknown
+ * verticals still render meaningfully. Kept alongside the helper so
+ * the mapping stays with the grouping logic that uses it.
+ */
+const CATEGORY_LABELS: Record<string, string> = {
+  ADAC: "Climate Adaptation",
+  "TOU-ADAC": "Tourism Adaptation",
+  "TOU-CT-ADAC": "Coastal Tourism Adaptation",
+  HTBDAC: "Habitat & Biodiversity",
+  HTBAC: "Habitat & Biodiversity",
+  MIAC: "Climate Mitigation",
+  MIAG: "Agriculture Mitigation",
+  REAC: "Ecosystem Restoration",
+  TF: "Tourism / Forest",
+  T1: "Terrestrial",
+  T2: "Terrestrial",
+  F1: "Forestry",
+  F2: "Forestry",
+  MIAC_LU: "Land-Use Mitigation",
+}
+
+/**
+ * Extract the category prefix from an activity code. Activity codes
+ * follow the pattern `<PREFIX>-<digits...>` where PREFIX may itself
+ * contain hyphens (e.g. "TOU-ADAC-01.01" → prefix "TOU-ADAC"). The
+ * boundary is the first hyphen that's followed by a digit.
+ *
+ * Examples:
+ *   "ADAC-13.04"           → "ADAC"
+ *   "TOU-ADAC-01.01"       → "TOU-ADAC"
+ *   "TOU-CT-ADAC-01.01"    → "TOU-CT-ADAC"
+ *   "HTBDAC-01.01.01.01"   → "HTBDAC"
+ *
+ * If no hyphen-digit boundary is found (unexpected shape), return the
+ * whole code as its own category so nothing gets silently misgrouped.
+ */
+export const extractCategoryPrefix = (activityCode: string): string => {
+  const match = activityCode.match(/^(.+?)-\d/)
+  return match ? match[1] : activityCode
+}
+
+export type CategoryGroup = {
+  category_code: string
+  category_label: string
+  activities: GroupedActivity[]
+  totalActivities: number
+  totalSelfDeclared: number
+  totalViaProductsOnly: number
+}
+
+/**
+ * Second-level grouping: bucket the per-activity groups into their
+ * category prefix. Purely presentational — the recommender still queries
+ * per activity code; this just gives the seller a scan-friendly hierarchy
+ * when they have coverage across many verticals.
+ *
+ * Category sort: alphabetical by human label. Activities inside each
+ * category retain their groupByActivity order (self-declared first,
+ * then alphabetical).
+ */
+export const groupByCategory = (
+  groups: GroupedActivity[]
+): CategoryGroup[] => {
+  const map = new Map<string, CategoryGroup>()
+  for (const g of groups) {
+    const prefix = extractCategoryPrefix(g.activity_code)
+    const existing = map.get(prefix)
+    const isViaProductsOnly = !g.hasSelfDeclared && g.productCount > 0
+    if (existing) {
+      existing.activities.push(g)
+      existing.totalActivities += 1
+      if (g.hasSelfDeclared) existing.totalSelfDeclared += 1
+      if (isViaProductsOnly) existing.totalViaProductsOnly += 1
+    } else {
+      map.set(prefix, {
+        category_code: prefix,
+        category_label: CATEGORY_LABELS[prefix] || prefix,
+        activities: [g],
+        totalActivities: 1,
+        totalSelfDeclared: g.hasSelfDeclared ? 1 : 0,
+        totalViaProductsOnly: isViaProductsOnly ? 1 : 0,
+      })
+    }
+  }
+  return Array.from(map.values()).sort((a, b) =>
+    a.category_label.localeCompare(b.category_label)
+  )
+}
+
 export const groupByActivity = (rows: AllCoverageRow[]): GroupedActivity[] => {
   const map = new Map<string, GroupedActivity>()
   for (const row of rows) {
