@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import {
   Badge,
   Button,
@@ -9,6 +9,7 @@ import {
   toast,
 } from "@medusajs/ui"
 import { SingleColumnPage } from "../../../components/layout/pages/single-column-page"
+import { uploadFilesQuery } from "../../../lib/client/client"
 import {
   useAttachSellerCertification,
   useCertificationCatalog,
@@ -54,6 +55,27 @@ const StatusBadge = ({
   )
 }
 
+// Accepted MIME hints for the file picker. Backend has no format
+// enforcement (it just stores the returned URL as document_url), so
+// this is UX-only — the browser filters the picker, we still show a
+// friendly error if the user drops something unexpected via the URL
+// path. Kept broad on purpose: real certificates arrive as PDFs, but
+// scanned images and Word docs are common enough.
+const ALLOWED_PROOF_ACCEPT =
+  "application/pdf,image/png,image/jpeg,image/webp,image/gif,image/svg+xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+const MAX_PROOF_BYTES = 10 * 1024 * 1024 // 10 MB — plenty for scanned certs
+
+const fileNameFromUrl = (url: string): string => {
+  try {
+    const u = new URL(url)
+    const last = u.pathname.split("/").filter(Boolean).pop()
+    return last ? decodeURIComponent(last) : url
+  } catch {
+    return url
+  }
+}
+
 const AddCertificationRow = ({
   existingSlugs,
 }: {
@@ -62,8 +84,13 @@ const AddCertificationRow = ({
   const [query, setQuery] = useState("")
   const [selected, setSelected] = useState<CatalogCertification | null>(null)
   const [documentUrl, setDocumentUrl] = useState("")
+  // Tracks whether documentUrl came from an upload (show filename chip)
+  // vs a paste (show URL). Purely presentational.
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
   const [expiresAt, setExpiresAt] = useState("")
   const [openList, setOpenList] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const trimmed = query.trim()
   const enabled = trimmed.length >= 2
@@ -78,6 +105,7 @@ const AddCertificationRow = ({
       setQuery("")
       setSelected(null)
       setDocumentUrl("")
+      setUploadedFileName(null)
       setExpiresAt("")
       setOpenList(false)
     },
@@ -85,6 +113,36 @@ const AddCertificationRow = ({
       toast.error(err?.message || "Could not attach certification")
     },
   })
+
+  const handleFilePicked = async (file: File) => {
+    if (file.size > MAX_PROOF_BYTES) {
+      toast.error(`File too large — max ${MAX_PROOF_BYTES / (1024 * 1024)}MB`)
+      return
+    }
+    setUploading(true)
+    try {
+      const resp = await uploadFilesQuery([{ file }])
+      const uploaded = resp?.files?.[0]?.url as string | undefined
+      if (!uploaded) {
+        toast.error("Upload failed — no URL returned")
+        return
+      }
+      setDocumentUrl(uploaded)
+      setUploadedFileName(file.name)
+      toast.success(`Uploaded ${file.name}`)
+    } catch (err) {
+      toast.error((err as Error)?.message || "Upload failed")
+    } finally {
+      setUploading(false)
+      // Reset the input so picking the same file again re-triggers change
+      if (fileInputRef.current) fileInputRef.current.value = ""
+    }
+  }
+
+  const clearDocument = () => {
+    setDocumentUrl("")
+    setUploadedFileName(null)
+  }
 
   const submit = () => {
     if (!selected) {
@@ -95,12 +153,31 @@ const AddCertificationRow = ({
       toast.info("You already attached that certification")
       return
     }
+    const trimmedUrl = documentUrl.trim()
+    if (!trimmedUrl) {
+      toast.error("A proof document is required — upload a file or paste a URL")
+      return
+    }
+    // Client-side URL sanity check — matches backend z.string().url()
+    try {
+      // eslint-disable-next-line no-new
+      new URL(trimmedUrl)
+    } catch {
+      toast.error("The proof document URL is not valid")
+      return
+    }
     attach.mutate({
       certification_slug: selected.slug,
-      document_url: documentUrl.trim() || null,
+      document_url: trimmedUrl,
       expires_at: expiresAt.trim() || null,
     })
   }
+
+  const canSubmit =
+    !!selected &&
+    !!documentUrl.trim() &&
+    !uploading &&
+    !attach.isPending
 
   return (
     <div className="px-6 py-4 border-b border-ui-border-base">
@@ -173,11 +250,82 @@ const AddCertificationRow = ({
             </div>
           )}
         </div>
-        <Input
-          placeholder="Document URL (PDF / image link — optional)"
-          value={documentUrl}
-          onChange={(e) => setDocumentUrl(e.target.value)}
-        />
+        {/* Proof document — required. Two paths: upload a file (goes to
+            Medusa's file service, returns a public URL) or paste a URL
+            directly. Either way we end up with a URL in documentUrl. */}
+        <div className="flex flex-col gap-1.5">
+          <Text size="xsmall" weight="plus" className="text-ui-fg-subtle">
+            Proof document <span className="text-ui-fg-error">*</span>
+          </Text>
+
+          {uploadedFileName ? (
+            <div className="flex items-center gap-2 rounded-md border border-ui-border-base bg-ui-bg-subtle px-3 py-2">
+              <span className="text-xs text-ui-fg-base truncate flex-1" title={documentUrl}>
+                {uploadedFileName}
+              </span>
+              <Badge size="2xsmall" color="green">
+                uploaded
+              </Badge>
+              <Button
+                variant="transparent"
+                size="small"
+                onClick={clearDocument}
+                disabled={uploading || attach.isPending}
+              >
+                Change
+              </Button>
+            </div>
+          ) : documentUrl ? (
+            <div className="flex items-center gap-2 rounded-md border border-ui-border-base bg-ui-bg-subtle px-3 py-2">
+              <span className="text-xs text-ui-fg-base truncate flex-1" title={documentUrl}>
+                {fileNameFromUrl(documentUrl)}
+              </span>
+              <Badge size="2xsmall" color="blue">
+                URL
+              </Badge>
+              <Button
+                variant="transparent"
+                size="small"
+                onClick={clearDocument}
+                disabled={uploading || attach.isPending}
+              >
+                Change
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={ALLOWED_PROOF_ACCEPT}
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0]
+                  if (f) handleFilePicked(f)
+                }}
+              />
+              <Button
+                variant="secondary"
+                size="small"
+                disabled={uploading || attach.isPending}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {uploading ? "Uploading…" : "Upload file (PDF / image)"}
+              </Button>
+              <Input
+                placeholder="…or paste a document URL"
+                value={documentUrl}
+                onChange={(e) => setDocumentUrl(e.target.value)}
+                disabled={uploading || attach.isPending}
+                className="flex-1"
+              />
+            </div>
+          )}
+          <Text size="xsmall" className="text-ui-fg-subtle">
+            PDF, image (PNG/JPG/WebP), or Word doc. Max 10&nbsp;MB. Required so the Tese admin can verify the certificate.
+          </Text>
+        </div>
+
         <div className="flex items-center gap-2">
           <Input
             type="date"
@@ -189,7 +337,7 @@ const AddCertificationRow = ({
           <Button
             variant="primary"
             size="small"
-            disabled={!selected || attach.isPending}
+            disabled={!canSubmit}
             onClick={submit}
           >
             {attach.isPending ? "Attaching…" : "Attach certification"}
