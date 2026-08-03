@@ -104,6 +104,15 @@ export const useCertificationCatalog = (
   })
 }
 
+// NOTE on the spread pattern below: extracting the caller's onSuccess
+// (and onError) BEFORE the spread and re-invoking them AFTER the
+// query invalidation is deliberate. React Query keeps only the last
+// onSuccess defined on the mutation config — so `onSuccess: ...; ...options`
+// silently clobbered our invalidation when the caller passed their own
+// onSuccess (which they always do, for the toast + form reset). That's
+// why the certifications list didn't refresh after attach until the
+// page was manually reloaded.
+
 export const useAttachSellerCertification = (
   options?: UseMutationOptions<
     { seller_certification: SellerCertificationRow },
@@ -115,16 +124,21 @@ export const useAttachSellerCertification = (
     }
   >
 ) => {
+  const { onSuccess: userOnSuccess, onError: userOnError, ...rest } = options || {}
   return useMutation({
     mutationFn: (payload) =>
       fetchQuery("/vendor/seller-certifications", {
         method: "POST",
         body: payload as Record<string, any>,
       }),
-    onSuccess: () => {
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: KEY })
+      userOnSuccess?.(data, variables, context)
     },
-    ...options,
+    onError: (err, variables, context) => {
+      userOnError?.(err, variables, context)
+    },
+    ...rest,
   })
 }
 
@@ -135,14 +149,19 @@ export const useRemoveSellerCertification = (
     string
   >
 ) => {
+  const { onSuccess: userOnSuccess, onError: userOnError, ...rest } = options || {}
   return useMutation({
     mutationFn: (id: string) =>
       fetchQuery(`/vendor/seller-certifications/${encodeURIComponent(id)}`, {
         method: "DELETE",
       }),
-    onSuccess: () => {
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: KEY })
+      userOnSuccess?.(data, variables, context)
     },
-    ...options,
+    onError: (err, variables, context) => {
+      userOnError?.(err, variables, context)
+    },
+    ...rest,
   })
 }
