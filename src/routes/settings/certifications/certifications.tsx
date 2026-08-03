@@ -16,6 +16,7 @@ import {
   useRemoveSellerCertification,
   useSellerCertifications,
   type CatalogCertification,
+  type CertificationDocument,
   type SellerCertificationRow,
 } from "../../../hooks/api/seller-certifications"
 
@@ -83,10 +84,10 @@ const AddCertificationRow = ({
 }) => {
   const [query, setQuery] = useState("")
   const [selected, setSelected] = useState<CatalogCertification | null>(null)
-  const [documentUrl, setDocumentUrl] = useState("")
-  // Tracks whether documentUrl came from an upload (show filename chip)
-  // vs a paste (show URL). Purely presentational.
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
+  // Multi-doc chip list: each entry is either an uploaded file (kind='file')
+  // or a pasted URL (kind='url'). At least one entry required to submit.
+  const [documents, setDocuments] = useState<CertificationDocument[]>([])
+  const [urlDraft, setUrlDraft] = useState("")
   const [uploading, setUploading] = useState(false)
   const [expiresAt, setExpiresAt] = useState("")
   const [openList, setOpenList] = useState(false)
@@ -104,8 +105,8 @@ const AddCertificationRow = ({
       toast.success("Certification attached — pending Tese admin review")
       setQuery("")
       setSelected(null)
-      setDocumentUrl("")
-      setUploadedFileName(null)
+      setDocuments([])
+      setUrlDraft("")
       setExpiresAt("")
       setOpenList(false)
     },
@@ -113,6 +114,20 @@ const AddCertificationRow = ({
       toast.error(err?.message || "Could not attach certification")
     },
   })
+
+  const addDocument = (doc: CertificationDocument) => {
+    // Dedupe by URL — pasting the same URL twice or re-uploading the
+    // same file just no-ops rather than piling on duplicates.
+    if (documents.some((d) => d.url === doc.url)) {
+      toast.info("That document is already attached")
+      return
+    }
+    setDocuments((prev) => [...prev, doc])
+  }
+
+  const removeDocumentAt = (idx: number) => {
+    setDocuments((prev) => prev.filter((_, i) => i !== idx))
+  }
 
   const handleFilePicked = async (file: File) => {
     if (file.size > MAX_PROOF_BYTES) {
@@ -127,8 +142,7 @@ const AddCertificationRow = ({
         toast.error("Upload failed — no URL returned")
         return
       }
-      setDocumentUrl(uploaded)
-      setUploadedFileName(file.name)
+      addDocument({ url: uploaded, filename: file.name, kind: "file" })
       toast.success(`Uploaded ${file.name}`)
     } catch (err) {
       toast.error((err as Error)?.message || "Upload failed")
@@ -139,9 +153,22 @@ const AddCertificationRow = ({
     }
   }
 
-  const clearDocument = () => {
-    setDocumentUrl("")
-    setUploadedFileName(null)
+  const addUrlFromDraft = () => {
+    const trimmedUrl = urlDraft.trim()
+    if (!trimmedUrl) return
+    try {
+      // eslint-disable-next-line no-new
+      new URL(trimmedUrl)
+    } catch {
+      toast.error("That doesn't look like a valid URL")
+      return
+    }
+    addDocument({
+      url: trimmedUrl,
+      filename: fileNameFromUrl(trimmedUrl),
+      kind: "url",
+    })
+    setUrlDraft("")
   }
 
   const submit = () => {
@@ -153,29 +180,20 @@ const AddCertificationRow = ({
       toast.info("You already attached that certification")
       return
     }
-    const trimmedUrl = documentUrl.trim()
-    if (!trimmedUrl) {
-      toast.error("A proof document is required — upload a file or paste a URL")
-      return
-    }
-    // Client-side URL sanity check — matches backend z.string().url()
-    try {
-      // eslint-disable-next-line no-new
-      new URL(trimmedUrl)
-    } catch {
-      toast.error("The proof document URL is not valid")
+    if (documents.length === 0) {
+      toast.error("Attach at least one proof document")
       return
     }
     attach.mutate({
       certification_slug: selected.slug,
-      document_url: trimmedUrl,
+      documents,
       expires_at: expiresAt.trim() || null,
     })
   }
 
   const canSubmit =
     !!selected &&
-    !!documentUrl.trim() &&
+    documents.length >= 1 &&
     !uploading &&
     !attach.isPending
 
@@ -250,79 +268,121 @@ const AddCertificationRow = ({
             </div>
           )}
         </div>
-        {/* Proof document — required. Two paths: upload a file (goes to
-            Medusa's file service, returns a public URL) or paste a URL
-            directly. Either way we end up with a URL in documentUrl. */}
-        <div className="flex flex-col gap-1.5">
-          <Text size="xsmall" weight="plus" className="text-ui-fg-subtle">
-            Proof document <span className="text-ui-fg-error">*</span>
-          </Text>
+        {/* Proof documents — at least one required. Sellers can mix
+            uploads (goes to /vendor/uploads, returns a public URL) with
+            pasted URLs (typically links to the certification body's
+            public verification registry). Each entry renders as a chip. */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-baseline justify-between">
+            <Text size="xsmall" weight="plus" className="text-ui-fg-subtle">
+              Proof documents <span className="text-ui-fg-error">*</span>
+            </Text>
+            <Text size="xsmall" className="text-ui-fg-muted">
+              {documents.length === 0
+                ? "at least one required"
+                : `${documents.length} attached`}
+            </Text>
+          </div>
 
-          {uploadedFileName ? (
-            <div className="flex items-center gap-2 rounded-md border border-ui-border-base bg-ui-bg-subtle px-3 py-2">
-              <span className="text-xs text-ui-fg-base truncate flex-1" title={documentUrl}>
-                {uploadedFileName}
-              </span>
-              <Badge size="2xsmall" color="green">
-                uploaded
-              </Badge>
-              <Button
-                variant="transparent"
-                size="small"
-                onClick={clearDocument}
-                disabled={uploading || attach.isPending}
-              >
-                Change
-              </Button>
+          {/* Chip list of already-attached docs. */}
+          {documents.length > 0 && (
+            <div className="flex flex-col gap-1.5">
+              {documents.map((doc, idx) => (
+                <div
+                  key={`${doc.url}-${idx}`}
+                  className="flex items-center gap-2 rounded-md border border-ui-border-base bg-ui-bg-subtle px-3 py-2"
+                >
+                  <span
+                    aria-hidden
+                    className="inline-flex items-center justify-center w-6 h-6 rounded bg-ui-bg-base text-[10px] font-semibold text-ui-fg-muted border border-ui-border-base"
+                  >
+                    {doc.kind === "file" ? "PDF" : "🔗"}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div
+                      className="text-xs text-ui-fg-base truncate"
+                      title={doc.url}
+                    >
+                      {doc.filename || fileNameFromUrl(doc.url)}
+                    </div>
+                    <div
+                      className="text-[10px] text-ui-fg-muted truncate"
+                      title={doc.url}
+                    >
+                      {doc.url}
+                    </div>
+                  </div>
+                  <Badge
+                    size="2xsmall"
+                    color={doc.kind === "file" ? "green" : "blue"}
+                  >
+                    {doc.kind === "file" ? "uploaded" : "URL"}
+                  </Badge>
+                  <Button
+                    variant="transparent"
+                    size="small"
+                    onClick={() => removeDocumentAt(idx)}
+                    disabled={uploading || attach.isPending}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
             </div>
-          ) : documentUrl ? (
-            <div className="flex items-center gap-2 rounded-md border border-ui-border-base bg-ui-bg-subtle px-3 py-2">
-              <span className="text-xs text-ui-fg-base truncate flex-1" title={documentUrl}>
-                {fileNameFromUrl(documentUrl)}
-              </span>
-              <Badge size="2xsmall" color="blue">
-                URL
-              </Badge>
-              <Button
-                variant="transparent"
-                size="small"
-                onClick={clearDocument}
-                disabled={uploading || attach.isPending}
-              >
-                Change
-              </Button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept={ALLOWED_PROOF_ACCEPT}
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0]
-                  if (f) handleFilePicked(f)
+          )}
+
+          {/* Add-more controls: file picker + paste-URL input. Stay
+              visible even when docs are attached so sellers can add more. */}
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={ALLOWED_PROOF_ACCEPT}
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0]
+                if (f) handleFilePicked(f)
+              }}
+            />
+            <Button
+              variant="secondary"
+              size="small"
+              disabled={uploading || attach.isPending}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {uploading ? "Uploading…" : documents.length ? "Upload another file" : "Upload file"}
+            </Button>
+            <div className="flex-1 flex gap-2">
+              <Input
+                placeholder="Paste a URL (e.g. verification registry link)"
+                value={urlDraft}
+                onChange={(e) => setUrlDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault()
+                    addUrlFromDraft()
+                  }
                 }}
+                disabled={uploading || attach.isPending}
+                className="flex-1"
               />
               <Button
                 variant="secondary"
                 size="small"
-                disabled={uploading || attach.isPending}
-                onClick={() => fileInputRef.current?.click()}
+                onClick={addUrlFromDraft}
+                disabled={
+                  !urlDraft.trim() || uploading || attach.isPending
+                }
               >
-                {uploading ? "Uploading…" : "Upload file (PDF / image)"}
+                Add URL
               </Button>
-              <Input
-                placeholder="…or paste a document URL"
-                value={documentUrl}
-                onChange={(e) => setDocumentUrl(e.target.value)}
-                disabled={uploading || attach.isPending}
-                className="flex-1"
-              />
             </div>
-          )}
+          </div>
+
           <Text size="xsmall" className="text-ui-fg-subtle">
-            PDF, image (PNG/JPG/WebP), or Word doc. Max 10&nbsp;MB. Required so the Tese admin can verify the certificate.
+            PDF, image (PNG/JPG/WebP), or Word doc. Max 10&nbsp;MB per
+            file. Mix uploads with links to the certifier's public
+            verification page for the strongest evidence.
           </Text>
         </div>
 
@@ -357,8 +417,17 @@ const CertificationRowItem = ({ row }: { row: SellerCertificationRow }) => {
     onError: (err) => toast.error(err?.message || "Could not remove"),
   })
 
+  // Multi-doc rows use `documents`. Legacy pre-migration rows had only
+  // `document_url` — fall back so we don't render blank for them.
+  const docs: CertificationDocument[] =
+    (row.documents && row.documents.length > 0
+      ? row.documents
+      : row.document_url
+        ? [{ url: row.document_url, kind: "url" }]
+        : []) as CertificationDocument[]
+
   return (
-    <div className="flex items-center justify-between gap-3 px-6 py-3 border-b border-ui-border-base last:border-0">
+    <div className="flex items-start justify-between gap-3 px-6 py-3 border-b border-ui-border-base last:border-0">
       <div className="min-w-0 flex-1">
         <div className="font-mono text-xs text-ui-fg-subtle">
           {row.certification_slug}
@@ -370,17 +439,26 @@ const CertificationRowItem = ({ row }: { row: SellerCertificationRow }) => {
               expires {new Date(row.expires_at).toLocaleDateString()}
             </Text>
           )}
-          {row.document_url && (
-            <a
-              href={row.document_url}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="text-xs text-ui-fg-interactive underline"
-            >
-              View document
-            </a>
-          )}
         </div>
+        {docs.length > 0 && (
+          <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+            {docs.map((d, i) => (
+              <a
+                key={`${d.url}-${i}`}
+                href={d.url}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-flex items-center gap-1 rounded-md border border-ui-border-base bg-ui-bg-subtle px-2 py-0.5 text-[11px] text-ui-fg-interactive hover:bg-ui-bg-base-hover max-w-[220px]"
+                title={d.url}
+              >
+                <span aria-hidden>{d.kind === "file" ? "📄" : "🔗"}</span>
+                <span className="truncate">
+                  {d.filename || fileNameFromUrl(d.url)}
+                </span>
+              </a>
+            ))}
+          </div>
+        )}
         {row.verification_notes && (
           <Text size="xsmall" className="mt-1 text-ui-fg-subtle">
             {row.verification_notes}

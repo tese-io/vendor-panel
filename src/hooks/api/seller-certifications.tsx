@@ -16,10 +16,19 @@ import { queryClient } from "../../lib/query-client"
  * via /vendor/certifications (see hooks/api/certifications-catalog).
  */
 
+export type CertificationDocument = {
+  url: string
+  filename?: string | null
+  kind?: "file" | "url"
+}
+
 export type SellerCertificationRow = {
   id: string
   seller_id: string
   certification_slug: string
+  // Preferred: multi-doc array. Falls back to document_url for pre-
+  // migration rows so the UI never blanks out on legacy records.
+  documents?: CertificationDocument[]
   document_url: string | null
   verification_status: "pending" | "verified" | "rejected" | "expired"
   verified_by: string | null
@@ -101,7 +110,7 @@ export const useAttachSellerCertification = (
     FetchError,
     {
       certification_slug: string
-      document_url?: string | null
+      documents: CertificationDocument[]
       expires_at?: string | null
     }
   >
