@@ -7,6 +7,7 @@ import * as zod from "zod"
 
 import { Form } from "../../../../../components/common/form"
 import { CountrySelect } from "../../../../../components/inputs/country-select"
+import { MapPinPicker } from "../../../../../components/common/map-pin-picker/map-pin-picker"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useUpdateStockLocation } from "../../../../../hooks/api/stock-locations"
@@ -14,6 +15,12 @@ import { useUpdateStockLocation } from "../../../../../hooks/api/stock-locations
 type EditLocationFormProps = {
   location: VendorExtendedAdminStockLocation
 }
+
+const GeoSchema = zod.object({
+  latitude: zod.number().min(-90).max(90),
+  longitude: zod.number().min(-180).max(180),
+  location_precision: zod.enum(["map_pinned", "geocoded", "country_centroid"]),
+})
 
 const EditLocationSchema = zod.object({
   name: zod.string().min(1),
@@ -27,11 +34,20 @@ const EditLocationSchema = zod.object({
     company: zod.string().optional(),
     phone: zod.string().optional(), // TODO: Add validation
   }),
+  geo: GeoSchema.optional(),
 })
 
 export const EditLocationForm = ({ location }: EditLocationFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
+
+  const existingGeo = (location as unknown as {
+    stock_location_geo?: {
+      latitude?: number
+      longitude?: number
+      location_precision?: "map_pinned" | "geocoded" | "country_centroid"
+    } | null
+  }).stock_location_geo
 
   const form = useForm<zod.infer<typeof EditLocationSchema>>({
     defaultValues: {
@@ -46,6 +62,16 @@ export const EditLocationForm = ({ location }: EditLocationFormProps) => {
         postal_code: location.address?.postal_code || "",
         province: location.address?.province || "",
       },
+      geo:
+        existingGeo?.latitude != null &&
+        existingGeo?.longitude != null &&
+        existingGeo?.location_precision
+          ? {
+              latitude: existingGeo.latitude,
+              longitude: existingGeo.longitude,
+              location_precision: existingGeo.location_precision,
+            }
+          : undefined,
     },
     resolver: zodResolver(EditLocationSchema),
   })
@@ -53,13 +79,14 @@ export const EditLocationForm = ({ location }: EditLocationFormProps) => {
   const { mutateAsync, isPending } = useUpdateStockLocation(location.id)
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    const { name, address } = values
+    const { name, address, geo } = values
 
     await mutateAsync(
       {
         name: name,
         address: address,
-      },
+        ...(geo ? { geo } : {}),
+      } as unknown as Parameters<typeof mutateAsync>[0],
       {
         onSuccess: () => {
           toast.success("Stock location updated")
@@ -209,6 +236,25 @@ export const EditLocationForm = ({ location }: EditLocationFormProps) => {
                     <Form.Label optional>{t("fields.phone")}</Form.Label>
                     <Form.Control>
                       <Input size="small" {...field} />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )
+              }}
+            />
+            <Form.Field
+              control={form.control}
+              name="geo"
+              render={({ field }) => {
+                return (
+                  <Form.Item>
+                    <Form.Label>Warehouse location pin</Form.Label>
+                    <Form.Control>
+                      <MapPinPicker
+                        value={field.value}
+                        onChange={(v) => field.onChange(v)}
+                        helpText="Used for distance and delivery-carbon estimates"
+                      />
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>

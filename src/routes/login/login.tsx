@@ -7,14 +7,29 @@ import * as z from "zod"
 
 import { Form } from "../../components/common/form"
 import AvatarBox from "../../components/common/logo-box/avatar-box"
+import { TeseLogo } from "../../components/common/tese-logo/tese-logo"
 import { useDashboardExtension } from "../../extensions"
 import { useSignInWithEmailPass } from "../../hooks/api"
 import { isFetchError } from "../../lib/is-fetch-error"
+import { getContinueWithTeseSellerUrl } from "../../lib/tese-auth-urls"
 
 const LoginSchema = z.object({
   email: z.string().email(),
   password: z.string(),
 })
+
+function getLoginReasonMessage (reason: string): string {
+  if (!reason) return ""
+  const normalized = reason.toLowerCase()
+  if (normalized === "unauthorized") return "Session expired"
+  if (normalized === "sso_missing_key") {
+    return "tese.io sign-in could not be completed. Please try again."
+  }
+  if (normalized === "sso_failed") {
+    return "tese.io sign-in failed. Please try again."
+  }
+  return reason
+}
 
 export const Login = () => {
   const { t } = useTranslation()
@@ -22,7 +37,8 @@ export const Login = () => {
   const [searchParams] = useSearchParams()
 
   const reason = searchParams.get("reason") || ""
-  const reasonMessage = reason && reason.toLowerCase() === "unauthorized" ? "Session expired" : reason
+  const reasonMessage = getLoginReasonMessage(reason)
+  const continueWithTeseHref = getContinueWithTeseSellerUrl()
 
   const { getWidgets } = useDashboardExtension()
 
@@ -91,6 +107,17 @@ export const Login = () => {
           {getWidgets("login.before").map((Component, i) => {
             return <Component key={i} />
           })}
+          <a
+            href={continueWithTeseHref}
+            className="tese-auth-tese-btn"
+            data-testid="login-continue-with-tese"
+          >
+            <TeseLogo size={20} className="tese-auth-tese-btn-icon" />
+            <span>Continue with tese.io</span>
+          </a>
+          <div className="tese-auth-divider" aria-hidden="true">
+            <span>or</span>
+          </div>
           <Form {...form}>
             <form
               onSubmit={handleSubmit}
