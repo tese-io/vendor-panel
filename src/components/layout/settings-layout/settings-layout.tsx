@@ -44,6 +44,23 @@ const useSettingRoutes = (): INavItem[] => {
         label: t("stockLocations.domain"),
         to: "/settings/locations",
       },
+      // P3.3/P3.4 — sellers declare what sustainability activities they cover
+      {
+        label: "Activities I serve",
+        to: "/settings/activities-served",
+      },
+      // Consolidated read-only view: what am I being surfaced for + why.
+      // Unions self-declared + product-classified rows so sellers can audit
+      // the full set (product classifications used to be invisible).
+      {
+        label: "Coverage overview",
+        to: "/settings/coverage-overview",
+      },
+      // Sellers attach sustainability certifications from shared catalog
+      {
+        label: "Certifications",
+        to: "/settings/certifications",
+      },
     ],
     [t]
   )

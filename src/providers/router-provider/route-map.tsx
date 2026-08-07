@@ -175,6 +175,19 @@ export const RouteMap: RouteObject[] = [
             lazy: () => import('../../routes/messages')
           },
           {
+            path: '/quotes',
+            errorElement: <ErrorBoundary />,
+            handle: {
+              breadcrumb: () => 'Quote requests'
+            },
+            children: [
+              {
+                path: '',
+                lazy: () => import('../../routes/quotes/quotes-list')
+              }
+            ]
+          },
+          {
             path: '/reviews',
             errorElement: <ErrorBoundary />,
             handle: {
@@ -989,6 +1002,34 @@ export const RouteMap: RouteObject[] = [
                 lazy: () => import('../../routes/store/store-metadata')
               }
             ]
+          },
+          {
+            // P3.3/P3.4 — sellers declare which sustainability activities they cover
+            path: 'activities-served',
+            errorElement: <ErrorBoundary />,
+            lazy: () => import('../../routes/settings/activities-served'),
+            handle: {
+              breadcrumb: () => 'Activities I serve'
+            }
+          },
+          {
+            // Read-only union of self-declared + product-classified rows,
+            // so sellers can see every activity they're being surfaced for.
+            path: 'coverage-overview',
+            errorElement: <ErrorBoundary />,
+            lazy: () => import('../../routes/settings/coverage-overview'),
+            handle: {
+              breadcrumb: () => 'Coverage overview'
+            }
+          },
+          {
+            // Sellers attach sustainability certifications from shared catalog
+            path: 'certifications',
+            errorElement: <ErrorBoundary />,
+            lazy: () => import('../../routes/settings/certifications/certifications'),
+            handle: {
+              breadcrumb: () => 'Certifications'
+            }
           },
           {
             path: 'users',
