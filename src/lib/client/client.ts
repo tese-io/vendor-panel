@@ -5,7 +5,12 @@ export const backendUrl =
 export const publishableApiKey =
   import.meta.env.VITE_PUBLISHABLE_API_KEY || '';
 
-const token = window.localStorage.getItem('medusa_auth_token') || '';
+// Read the JWT fresh on every request. Capturing it once at module load
+// meant that any request built with this helper (uploadFilesQuery,
+// importProductsQuery) used whatever was in localStorage when the panel
+// bundle first evaluated — usually before login → Bearer '' → 401.
+const getAuthToken = () =>
+  window.localStorage.getItem('medusa_auth_token') || '';
 
 const decodeJwt = (token: string) => {
   try {
@@ -44,7 +49,7 @@ export const importProductsQuery = async (file: File) => {
     method: 'POST',
     body: formData,
     headers: {
-      authorization: `Bearer ${token}`,
+      authorization: `Bearer ${getAuthToken()}`,
       'x-publishable-api-key': publishableApiKey
     }
   })
@@ -63,7 +68,7 @@ export const uploadFilesQuery = async (files: any[]) => {
     method: 'POST',
     body: formData,
     headers: {
-      authorization: `Bearer ${token}`,
+      authorization: `Bearer ${getAuthToken()}`,
       'x-publishable-api-key': publishableApiKey
     }
   })
@@ -122,7 +127,7 @@ export const fetchQuery = async (
     const errorData = await response.json();
 
     if (response.status === 401) {
-      if (isTokenExpired(token)) {
+      if (isTokenExpired(bearer)) {
         localStorage.removeItem('medusa_auth_token');
         window.location.href = '/login?reason=Unauthorized';
         return;
