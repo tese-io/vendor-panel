@@ -136,7 +136,7 @@ const AddCertificationRow = ({
     }
     setUploading(true)
     try {
-      const resp = await uploadFilesQuery([{ file }])
+      const resp = await uploadFilesQuery([{ file }], { purpose: 'private' })
       const uploaded = resp?.files?.[0]?.url as string | undefined
       if (!uploaded) {
         toast.error("Upload failed — no URL returned")
@@ -269,7 +269,7 @@ const AddCertificationRow = ({
           )}
         </div>
         {/* Proof documents — at least one required. Sellers can mix
-            uploads (goes to /vendor/uploads, returns a public URL) with
+            uploads (goes to /vendor/uploads as a private proof) with
             pasted URLs (typically links to the certification body's
             public verification registry). Each entry renders as a chip. */}
         <div className="flex flex-col gap-2">
