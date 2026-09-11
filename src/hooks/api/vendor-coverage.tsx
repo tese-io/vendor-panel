@@ -24,11 +24,18 @@ export type CoverageRow = {
   is_active: boolean
   createdAt?: string
   updatedAt?: string
+  // Display enrichment (Mercur joins the activity catalog server-side;
+  // absent when the catalog lookup failed — render the code instead).
+  activity_name?: string | null
+  activity_description?: string | null
+  industry_vertical?: string | null
+  domain?: string | null
 }
 
 export type ActivityHit = {
   code: string
   name: string
+  description?: string | null
   industry_vertical?: string | null
   domain?: string | null
   subset?: string | null
@@ -87,22 +94,36 @@ export const useAllSellerCoverage = (
   })
 }
 
-/** Autocomplete activity codes. Sellers pick from these to add coverage. */
+/**
+ * Search / browse the activity catalog. Sellers pick from these to add
+ * coverage. Works in two modes: typed search (q ≥ 2 chars) and category
+ * browse (vertical/domain filter with no query) — the browse path is how
+ * vendors who don't know the taxonomy discover what to declare.
+ */
 export const useActivitySearch = (
   q: string,
+  filters?: { industry_vertical?: string; domain?: string },
   options?: Omit<
-    UseQueryOptions<{ activities: ActivityHit[]; count: number }, FetchError, { activities: ActivityHit[]; count: number }, any>,
+    UseQueryOptions<{ activities: ActivityHit[]; count: number; has_more?: boolean }, FetchError, { activities: ActivityHit[]; count: number; has_more?: boolean }, any>,
     "queryFn" | "queryKey"
   >
 ) => {
+  const vertical = filters?.industry_vertical || ""
+  const domain = filters?.domain || ""
+  const hasQuery = q.trim().length >= 2
   return useQuery({
-    queryKey: ["vendor-activities-search", q],
-    // Skip the network round-trip when the user hasn't typed anything meaningful yet.
-    enabled: q.trim().length >= 2,
+    queryKey: ["vendor-activities-search", q, vertical, domain],
+    // Fire when there is anything to go on: text, or a browse filter.
+    enabled: hasQuery || !!vertical || !!domain,
     queryFn: () =>
       fetchQuery("/vendor/activities/search", {
         method: "GET",
-        query: { q, limit: 25 },
+        query: {
+          ...(hasQuery ? { q } : {}),
+          ...(vertical ? { industry_vertical: vertical } : {}),
+          ...(domain ? { domain } : {}),
+          limit: 25,
+        },
       }),
     staleTime: 60_000,
     ...options,
