@@ -57,14 +57,18 @@ export const importProductsQuery = async (file: File) => {
     .catch(() => null);
 };
 
-export const uploadFilesQuery = async (files: any[]) => {
+export const uploadFilesQuery = async (
+  files: any[],
+  options?: { purpose?: 'public' | 'private' }
+) => {
   const formData = new FormData();
 
   for (const { file } of files) {
     formData.append('files', file);
   }
 
-  return await fetch(`${backendUrl}/vendor/uploads`, {
+  const qs = options?.purpose ? `?purpose=${options.purpose}` : ''
+  return await fetch(`${backendUrl}/vendor/uploads${qs}`, {
     method: 'POST',
     body: formData,
     headers: {
