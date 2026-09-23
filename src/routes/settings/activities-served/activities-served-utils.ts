@@ -5,11 +5,13 @@
 
 export const ALL = "all" as const
 
-/** Industry verticals present in the activity taxonomy (stable set). */
+/** Industry verticals present in the activity taxonomy (stable set).
+ *  GENERIC included per C6 — those rows were unreachable by browse. */
 export const VERTICAL_OPTIONS = [
   { value: "TOU", label: "Tourism" },
   { value: "AGRI", label: "Agriculture" },
   { value: "NATURE", label: "Nature" },
+  { value: "GENERIC", label: "General" },
 ] as const
 
 /** Domains present in the activity taxonomy (stable set). */

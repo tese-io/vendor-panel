@@ -1,6 +1,6 @@
 import { HttpTypes } from '@medusajs/types';
 import { t } from 'i18next';
-import { Outlet, RouteObject, UIMatch } from 'react-router-dom';
+import { Navigate, Outlet, RouteObject, UIMatch } from 'react-router-dom';
 
 import { ProtectedRoute } from '../../components/authentication/protected-route';
 import { MainLayout } from '../../components/layout/main-layout';
@@ -19,6 +19,11 @@ export const RouteMap: RouteObject[] = [
     element: <ProtectedRoute />,
     errorElement: <ErrorBoundary />,
     children: [
+      {
+        // B-02 first-run wizard: full-screen, outside MainLayout chrome.
+        path: '/onboarding',
+        lazy: () => import('../../routes/onboarding')
+      },
       {
         element: <MainLayout />,
         children: [
@@ -1640,11 +1645,18 @@ export const RouteMap: RouteObject[] = [
             lazy: () => import('../../routes/sso-callback')
           },
           {
+            // B-05: authenticated-but-not-approved applicants land here
+            // instead of a raw "Seller is not active" login error.
+            path: '/pending-approval',
+            lazy: () => import('../../routes/pending-approval')
+          },
+          {
             path: '/register',
-            lazy:
-              __DISABLE_SELLERS_REGISTRATION__ === 'false'
-                ? () => import('../../routes/register')
-                : undefined
+            // When registration is disabled, redirect instead of
+            // rendering a blank page (lazy: undefined).
+            ...(__DISABLE_SELLERS_REGISTRATION__ === 'false'
+              ? { lazy: () => import('../../routes/register') }
+              : { element: <Navigate to="/login" replace /> })
           },
           {
             path: '/reset-password',

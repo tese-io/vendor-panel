@@ -13,7 +13,14 @@ import {
   useExtendableForm,
 } from "../../../../../extensions"
 import { useCreateProduct } from "../../../../../hooks/api/products"
-import { uploadFilesQuery } from "../../../../../lib/client"
+import { useConfiguration } from "../../../../../hooks/api/store"
+import { fetchQuery, uploadFilesQuery } from "../../../../../lib/client"
+import {
+  deriveSubmitActions,
+  getRequireApproval,
+  parseIncompleteProfile,
+  INCOMPLETE_FIELD_KEYS,
+} from "../../../../../lib/product-submit"
 import {
   PRODUCT_CREATE_FORM_DEFAULTS,
   ProductCreateSchema,
@@ -81,6 +88,12 @@ export const ProductCreateForm = ({
   })
 
   const { mutateAsync, isPending } = useCreateProduct()
+
+  // B-10: the primary action tells the truth. When admin review is
+  // required (D-01 launch state) it reads "Submit for review" with a
+  // hint; when the flag is off it publishes directly after create.
+  const configuration = useConfiguration()
+  const submitActions = deriveSubmitActions(getRequireApproval(configuration))
 
   /**
    * TODO: Important to revisit this - use variants watch so high in the tree can cause needless rerenders of the entire page
@@ -183,7 +196,22 @@ export const ProductCreateForm = ({
         })),
       },
       {
-        onSuccess: (data) => {
+        onSuccess: async (data) => {
+          // Direct-publish environments (D-01 flag off): the create
+          // lands as 'proposed'; promote it immediately so the vendor's
+          // "Publish" button means what it says. Failure degrades to
+          // submitted-for-review, never blocks the create.
+          if (!isDraftSubmission && submitActions.publishAfterCreate) {
+            try {
+              await fetchQuery(`/vendor/products/${data.product.id}/status`, {
+                method: "POST",
+                body: { status: "published" },
+              })
+            } catch {
+              toast.warning(t("productSubmit.publishFailedFallback"))
+            }
+          }
+
           toast.success(
             t("products.create.successToast", {
               title: data.product.title,
@@ -193,6 +221,19 @@ export const ProductCreateForm = ({
           handleSuccess(`../${data.product.id}`)
         },
         onError: (error) => {
+          // D-04 gate: turn the completeness rejection into actionable
+          // guidance instead of a raw server message.
+          const missing = parseIncompleteProfile(error.message)
+          if (missing?.length) {
+            toast.error(
+              t("productSubmit.incompleteProfile", {
+                fields: missing
+                  .map((f) => t(INCOMPLETE_FIELD_KEYS[f]))
+                  .join(", "),
+              })
+            )
+            return
+          }
           toast.error(error.message)
         },
       }
@@ -359,27 +400,42 @@ export const ProductCreateForm = ({
           </RouteFocusModal.Body>
         </ProgressTabs>
         <RouteFocusModal.Footer>
-          <div className="flex items-center justify-end gap-x-2">
-            <RouteFocusModal.Close asChild>
-              <Button variant="secondary" size="small">
-                {t("actions.cancel")}
+          <div className="flex w-full items-center justify-between gap-x-2">
+            {submitActions.hintKey ? (
+              <span
+                className="text-ui-fg-subtle txt-small"
+                data-testid="product-submit-review-hint"
+              >
+                {t(submitActions.hintKey)}
+              </span>
+            ) : (
+              <span />
+            )}
+            <div className="flex items-center gap-x-2">
+              <RouteFocusModal.Close asChild>
+                <Button variant="secondary" size="small">
+                  {t("actions.cancel")}
+                </Button>
+              </RouteFocusModal.Close>
+              <Button
+                data-name={SAVE_DRAFT_BUTTON}
+                size="small"
+                type="submit"
+                variant="secondary"
+                isLoading={isPending}
+                className="whitespace-nowrap"
+                data-testid="product-save-draft"
+              >
+                {t("productSubmit.saveAsDraft")}
               </Button>
-            </RouteFocusModal.Close>
-            <Button
-              data-name={SAVE_DRAFT_BUTTON}
-              size="small"
-              type="submit"
-              isLoading={isPending}
-              className="whitespace-nowrap"
-            >
-              Draft
-            </Button>
-            <PrimaryButton
-              tab={tab}
-              next={onNext}
-              isLoading={isPending}
-              showInventoryTab={showInventoryTab}
-            />
+              <PrimaryButton
+                tab={tab}
+                next={onNext}
+                isLoading={isPending}
+                showInventoryTab={showInventoryTab}
+                label={t(submitActions.primaryLabelKey)}
+              />
+            </div>
           </div>
         </RouteFocusModal.Footer>
       </KeyboundForm>
@@ -392,6 +448,7 @@ type PrimaryButtonProps = {
   next: (tab: Tab) => void
   isLoading?: boolean
   showInventoryTab: boolean
+  label: string
 }
 
 const PrimaryButton = ({
@@ -399,6 +456,7 @@ const PrimaryButton = ({
   next,
   isLoading,
   showInventoryTab,
+  label,
 }: PrimaryButtonProps) => {
   const { t } = useTranslation()
 
@@ -414,8 +472,9 @@ const PrimaryButton = ({
         variant="primary"
         size="small"
         isLoading={isLoading}
+        data-testid="product-submit-primary"
       >
-        Create Product
+        {label}
       </Button>
     )
   }
