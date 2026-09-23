@@ -14,8 +14,19 @@ import { useSignUpWithEmailPass } from '../../hooks/api';
 import { PasswordValidator } from './password-hints.tsx';
 import { COMPANY_TYPES, RegisterSchema } from './register-schema.ts';
 
+const SectionCaption = ({ children }: { children: string }) => (
+  <Text
+    size="xsmall"
+    weight="plus"
+    className="uppercase tracking-wider text-ui-fg-muted"
+  >
+    {children}
+  </Text>
+);
+
 export const Register = () => {
   const [success, setSuccess] = useState(false);
+  const [triedSubmit, setTriedSubmit] = useState(false);
   const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
@@ -44,6 +55,11 @@ export const Register = () => {
 
   const handleSubmit = form.handleSubmit(async ({ name, email, website, company_type, country_code, password, confirmPassword }) => {
     if (!passwordError.isValid) {
+      setTriedSubmit(true);
+      form.setError('password', {
+        type: 'manual',
+        message: t('register.passwordRequirements')
+      });
       return;
     }
     if (password !== confirmPassword) {
@@ -133,9 +149,9 @@ export const Register = () => {
 
   return (
     <div className="tese-auth-page flex min-h-dvh w-dvw items-center justify-center">
-      <div className="tese-auth-card m-4 flex flex-col items-center">
+      <div className="tese-auth-card tese-auth-card--wide m-4 flex flex-col items-center">
         <AvatarBox />
-        <div className="mb-4 flex flex-col items-center">
+        <div className="mb-6 flex flex-col items-center">
           <Heading>{t('register.title')}</Heading>
           <Text
             size="small"
@@ -150,17 +166,19 @@ export const Register = () => {
               onSubmit={handleSubmit}
               className="flex w-full flex-col gap-y-6"
             >
-              <div className="flex flex-col gap-y-2">
+              <div className="flex flex-col gap-y-4">
+                <SectionCaption>{t('register.sectionCompany')}</SectionCaption>
                 <Form.Field
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <Form.Item>
+                      <Form.Label>{t('register.companyName')}</Form.Label>
                       <Form.Control>
                         <Input
                           {...field}
-                          className="mb-2 bg-ui-bg-field-component"
-                          placeholder={t('register.companyName')}
+                          className="bg-ui-bg-field-component"
+                          placeholder={t('register.companyNamePlaceholder')}
                           data-testid="register-company-name"
                         />
                       </Form.Control>
@@ -172,74 +190,85 @@ export const Register = () => {
                   name="website"
                   render={({ field }) => (
                     <Form.Item>
+                      <Form.Label optional>{t('register.website')}</Form.Label>
                       <Form.Control>
                         <Input
                           {...field}
                           className="bg-ui-bg-field-component"
-                          placeholder={t('register.website')}
+                          placeholder={t('register.websitePlaceholder')}
                           data-testid="register-website"
                         />
                       </Form.Control>
                     </Form.Item>
                   )}
                 />
-                <Form.Field
-                  control={form.control}
-                  name="company_type"
-                  render={({ field: { onChange, value, ...field } }) => (
-                    <Form.Item>
-                      <Form.Control>
-                        <Select
-                          value={value || undefined}
-                          onValueChange={onChange}
-                          {...field}
-                        >
-                          <Select.Trigger
-                            className="bg-ui-bg-field-component"
-                            data-testid="register-company-type"
+                <div className="grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 min-[480px]:gap-x-3">
+                  <Form.Field
+                    control={form.control}
+                    name="company_type"
+                    render={({ field: { onChange, value, ...field } }) => (
+                      <Form.Item>
+                        <Form.Label optional>
+                          {t('register.companyType')}
+                        </Form.Label>
+                        <Form.Control>
+                          <Select
+                            value={value || undefined}
+                            onValueChange={onChange}
+                            {...field}
                           >
-                            <Select.Value
-                              placeholder={t('register.companyType')}
-                            />
-                          </Select.Trigger>
-                          <Select.Content>
-                            {COMPANY_TYPES.map((type) => (
-                              <Select.Item key={type} value={type}>
-                                {t(`register.companyTypes.${type}`)}
-                              </Select.Item>
-                            ))}
-                          </Select.Content>
-                        </Select>
-                      </Form.Control>
-                    </Form.Item>
-                  )}
-                />
-                <Form.Field
-                  control={form.control}
-                  name="country_code"
-                  render={({ field }) => (
-                    <Form.Item>
-                      <Form.Control>
-                        <CountrySelect
-                          {...field}
-                          className="bg-ui-bg-field-component"
-                          placeholder={t('register.country')}
-                          data-testid="register-country"
-                        />
-                      </Form.Control>
-                    </Form.Item>
-                  )}
-                />
+                            <Select.Trigger
+                              className="bg-ui-bg-field-component"
+                              data-testid="register-company-type"
+                            >
+                              <Select.Value
+                                placeholder={t('register.selectType')}
+                              />
+                            </Select.Trigger>
+                            <Select.Content>
+                              {COMPANY_TYPES.map((type) => (
+                                <Select.Item key={type} value={type}>
+                                  {t(`register.companyTypes.${type}`)}
+                                </Select.Item>
+                              ))}
+                            </Select.Content>
+                          </Select>
+                        </Form.Control>
+                      </Form.Item>
+                    )}
+                  />
+                  <Form.Field
+                    control={form.control}
+                    name="country_code"
+                    render={({ field }) => (
+                      <Form.Item>
+                        <Form.Label optional>{t('register.country')}</Form.Label>
+                        <Form.Control>
+                          <CountrySelect
+                            {...field}
+                            className="bg-ui-bg-field-component"
+                            placeholder={t('register.selectCountry')}
+                            data-testid="register-country"
+                          />
+                        </Form.Control>
+                      </Form.Item>
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-y-4">
+                <SectionCaption>{t('register.sectionAccount')}</SectionCaption>
                 <Form.Field
                   control={form.control}
                   name="email"
                   render={({ field }) => (
                     <Form.Item>
+                      <Form.Label>{t('fields.email')}</Form.Label>
                       <Form.Control>
                         <Input
                           {...field}
                           className="bg-ui-bg-field-component"
-                          placeholder={t('fields.email')}
+                          placeholder={t('register.emailPlaceholder')}
                           data-testid="register-email"
                         />
                       </Form.Control>
@@ -252,31 +281,28 @@ export const Register = () => {
                   name="password"
                   render={({ field }) => (
                     <Form.Item>
-                      <Form.Label>{}</Form.Label>
+                      <Form.Label>{t('fields.password')}</Form.Label>
                       <Form.Control>
                         <Input
                           type="password"
                           {...field}
                           className="bg-ui-bg-field-component"
-                          placeholder={t('fields.password')}
                         />
                       </Form.Control>
                     </Form.Item>
                   )}
                 />
-
                 <Form.Field
                   control={form.control}
                   name="confirmPassword"
                   render={({ field }) => (
                     <Form.Item>
-                      <Form.Label>{}</Form.Label>
+                      <Form.Label>{t('register.confirmPassword')}</Form.Label>
                       <Form.Control>
                         <Input
                           type="password"
                           {...field}
                           className="bg-ui-bg-field-component"
-                          placeholder={t('register.confirmPassword')}
                         />
                       </Form.Control>
                     </Form.Item>
@@ -285,6 +311,7 @@ export const Register = () => {
                 <PasswordValidator
                   password={form.watch('password')}
                   setError={setPasswordError}
+                  showErrors={triedSubmit}
                 />
               </div>
               {validationError && (

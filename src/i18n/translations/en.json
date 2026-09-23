@@ -2672,10 +2672,15 @@
   "register": {
     "title": "Join Tese Seller Panel",
     "hint": "Sign up to start selling",
+    "sectionCompany": "Your company",
+    "sectionAccount": "Your account",
     "alreadySeller": "Already have an account? - <0>Sign In</0>",
     "companyName": "Company name",
-    "website": "Company website (https://…)",
+    "companyNamePlaceholder": "Your registered business name",
+    "website": "Company website",
+    "websitePlaceholder": "https://yourcompany.com",
     "companyType": "Business type",
+    "selectType": "Select type",
     "companyTypes": {
       "manufacturer": "Manufacturer",
       "distributor": "Distributor",
@@ -2685,8 +2690,11 @@
       "other": "Other"
     },
     "country": "Country",
+    "selectCountry": "Select country",
     "emailHint": "Use your company email — it helps us verify your business faster.",
+    "emailPlaceholder": "you@yourcompany.com",
     "confirmPassword": "Confirm Password",
+    "passwordRequirements": "Your password doesn't meet all the requirements yet",
     "passwordsDontMatch": "Password and Confirm Password don't match",
     "emailTaken": "Provided email is already taken",
     "submit": "Sign up",

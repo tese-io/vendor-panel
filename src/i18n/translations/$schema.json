@@ -9931,16 +9931,31 @@
         "hint": {
           "type": "string"
         },
+        "sectionCompany": {
+          "type": "string"
+        },
+        "sectionAccount": {
+          "type": "string"
+        },
         "alreadySeller": {
           "type": "string"
         },
         "companyName": {
           "type": "string"
         },
+        "companyNamePlaceholder": {
+          "type": "string"
+        },
         "website": {
           "type": "string"
         },
+        "websitePlaceholder": {
+          "type": "string"
+        },
         "companyType": {
+          "type": "string"
+        },
+        "selectType": {
           "type": "string"
         },
         "companyTypes": {
@@ -9978,10 +9993,19 @@
         "country": {
           "type": "string"
         },
+        "selectCountry": {
+          "type": "string"
+        },
         "emailHint": {
           "type": "string"
         },
+        "emailPlaceholder": {
+          "type": "string"
+        },
         "confirmPassword": {
+          "type": "string"
+        },
+        "passwordRequirements": {
           "type": "string"
         },
         "passwordsDontMatch": {
@@ -10006,14 +10030,22 @@
       "required": [
         "title",
         "hint",
+        "sectionCompany",
+        "sectionAccount",
         "alreadySeller",
         "companyName",
+        "companyNamePlaceholder",
         "website",
+        "websitePlaceholder",
         "companyType",
+        "selectType",
         "companyTypes",
         "country",
+        "selectCountry",
         "emailHint",
+        "emailPlaceholder",
         "confirmPassword",
+        "passwordRequirements",
         "passwordsDontMatch",
         "emailTaken",
         "submit",
