@@ -26,6 +26,7 @@ import { useMe } from '../../../hooks/api';
 import { useSearch } from '../../../providers/search-provider';
 import { ImageAvatar } from '../../common/image-avatar';
 import { Skeleton } from '../../common/skeleton';
+import { TeseVerifiedBadge } from '../../common/tese-verified-badge/tese-verified-badge';
 import { INavItem, NavItem } from '../../layout/nav-item';
 import { Shell } from '../../layout/shell';
 import { UserMenu } from '../user-menu';
@@ -83,16 +84,19 @@ const Header = () => {
       ) : (
         <Skeleton className="h-6 w-6 rounded-md" />
       )}
-      <div className="block overflow-hidden text-left">
+      <div className="flex items-center gap-x-1.5 overflow-hidden text-left">
         {name ? (
-          <Text
-            size="small"
-            weight="plus"
-            leading="compact"
-            className="truncate"
-          >
-            {name}
-          </Text>
+          <>
+            <Text
+              size="small"
+              weight="plus"
+              leading="compact"
+              className="truncate"
+            >
+              {name}
+            </Text>
+            <TeseVerifiedBadge verified={Boolean(seller?.is_verified)} compact />
+          </>
         ) : (
           <Skeleton className="h-[9px] w-[120px]" />
         )}

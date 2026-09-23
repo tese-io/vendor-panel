@@ -5,6 +5,7 @@ import { StoreVendor } from "../../../../../types/user"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { Pencil } from "@medusajs/icons"
 import { ImageAvatar } from "../../../../../components/common/image-avatar"
+import { TeseVerifiedBadge } from "../../../../../components/common/tese-verified-badge/tese-verified-badge"
 
 export const StoreGeneralSection = ({ seller }: { seller: StoreVendor }) => {
   const { t } = useTranslation()
@@ -12,8 +13,9 @@ export const StoreGeneralSection = ({ seller }: { seller: StoreVendor }) => {
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <div>
+        <div className="flex items-center gap-x-2">
           <Heading>{t("store.domain")}</Heading>
+          <TeseVerifiedBadge verified={Boolean(seller.is_verified)} />
         </div>
         <ActionMenu
           groups={[
@@ -29,6 +31,13 @@ export const StoreGeneralSection = ({ seller }: { seller: StoreVendor }) => {
           ]}
         />
       </div>
+      {!seller.is_verified && (
+        <div className="px-6 py-3" data-testid="verified-badge-how-to-earn">
+          <Text size="xsmall" className="text-ui-fg-subtle">
+            {t("verifiedBadge.howToEarn")}
+          </Text>
+        </div>
+      )}
       <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4 items-center">
         <Text size="small" leading="compact" weight="plus">
           Image

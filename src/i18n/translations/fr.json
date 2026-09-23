@@ -2455,7 +2455,10 @@
         "placeholder": "mauvaise_taille",
         "tooltip": "La valeur doit être un identifiant unique pour la raison de retour."
       },
-      "label": { "label": "Label", "placeholder": "Mauvaise taille" },
+      "label": {
+        "label": "Label",
+        "placeholder": "Mauvaise taille"
+      },
       "description": {
         "label": "Description",
         "placeholder": "Le client a reçu la mauvaise taille"
@@ -2795,5 +2798,259 @@
     "minutes_other": "Minutes",
     "seconds_one": "Seconde",
     "seconds_other": "Secondes"
+  },
+  "pendingApproval": {
+    "title": "Statut de la candidature",
+    "receivedTitle": "Candidature reçue",
+    "receivedBody": "Merci de votre candidature pour vendre sur la marketplace tese. Notre équipe examine votre dossier — vous recevrez un e-mail dès son approbation.",
+    "claimBody": "Votre entreprise dispose déjà d'une boutique sur la marketplace tese. Nous avons demandé à l'équipe tese de confirmer votre accès — vous recevrez un e-mail dès son approbation.",
+    "approvedTitle": "Candidature approuvée",
+    "approvedBody": "Votre boutique est prête. Connectez-vous pour commencer.",
+    "declinedTitle": "Candidature refusée",
+    "declinedBody": "Malheureusement, votre candidature n'a pas été approuvée.",
+    "reviewerReason": "Motif de l'équipe de vérification",
+    "submittedOn": "Soumise le {{date}}",
+    "reviewedOn": "Examinée le {{date}}",
+    "contactSupport": "Contacter le support",
+    "goToLogin": "Aller à la connexion",
+    "logOut": "Se déconnecter",
+    "noApplication": "Aucune candidature trouvée pour ce compte.",
+    "startApplication": "Commencer votre candidature"
+  },
+  "register": {
+    "title": "Rejoignez le panneau vendeur Tese",
+    "hint": "Inscrivez-vous pour commencer à vendre",
+    "alreadySeller": "Vous avez déjà un compte ? - <0>Se connecter</0>",
+    "companyName": "Nom de l'entreprise",
+    "website": "Site web de l'entreprise (https://…)",
+    "companyType": "Type d'activité",
+    "companyTypes": {
+      "manufacturer": "Fabricant",
+      "distributor": "Distributeur",
+      "wholesaler": "Grossiste",
+      "service_provider": "Prestataire de services",
+      "startup": "Startup",
+      "other": "Autre"
+    },
+    "country": "Pays",
+    "emailHint": "Utilisez votre e-mail professionnel — cela nous aide à vérifier votre entreprise plus rapidement.",
+    "confirmPassword": "Confirmer le mot de passe",
+    "passwordsDontMatch": "Le mot de passe et sa confirmation ne correspondent pas",
+    "emailTaken": "Cette adresse e-mail est déjà utilisée",
+    "submit": "S'inscrire",
+    "successTitle": "Merci pour votre inscription !",
+    "successBody": "Une autorisation de l'équipe peut être nécessaire avant de pouvoir vous connecter. Un e-mail de confirmation vous sera envoyé prochainement.",
+    "backToLogin": "Retour à la page de connexion"
+  },
+  "dashboardChecklist": {
+    "title": "Configurez votre boutique",
+    "subtitle": "Terminez ces étapes pour que les acheteurs vous trouvent et que tese vous associe à des projets",
+    "progress": "{{done}} sur {{known}} terminées",
+    "successLine": "La configuration de votre boutique est terminée — vous êtes visible pour les acheteurs et prêt pour le matching.",
+    "unknown": "—",
+    "optional": "Facultatif",
+    "pricedDetail": "{{priced}} produit(s) sur {{total}} ont un prix",
+    "rows": {
+      "store_information": {
+        "title": "Complétez les informations de votre boutique",
+        "description": "Les informations de l'entreprise visibles sur votre profil",
+        "action": "Gérer"
+      },
+      "locations_shipping": {
+        "title": "Configurez les emplacements et la livraison",
+        "description": "Les acheteurs voient votre distance et les émissions de livraison sur chaque fiche — cela nécessite l'emplacement de votre entrepôt",
+        "action": "Configurer"
+      },
+      "activities": {
+        "title": "Déclarez les activités de service que vous couvrez",
+        "description": "Le matching part des activités — déclarer les vôtres vous fait apparaître quand un client tese en a besoin",
+        "action": "Déclarer"
+      },
+      "contact_email": {
+        "title": "Ajoutez un e-mail de contact",
+        "description": "Les demandes de devis des acheteurs doivent arriver quelque part",
+        "action": "Ajouter"
+      },
+      "stripe_connection": {
+        "title": "Connectez votre compte de paiement",
+        "description": "Nécessaire pour recevoir les paiements des commandes",
+        "action": "Connecter"
+      },
+      "products": {
+        "title": "Ajoutez votre premier produit",
+        "description": "Les produits sont ce que voient les acheteurs et le moteur de matching",
+        "action": "Ajouter"
+      },
+      "prices": {
+        "title": "Fixez le prix de vos produits",
+        "description": "Les produits sans prix ne peuvent être comparés — ni soumis à validation",
+        "action": "Vérifier"
+      },
+      "certifications": {
+        "title": "Ajoutez des certifications de durabilité",
+        "description": "Les certifications vérifiées apparaissent comme badges pour les acheteurs et donnent droit au badge tese Verified",
+        "action": "Ajouter"
+      }
+    }
+  },
+  "onboardingWizard": {
+    "title": "Configurez votre boutique",
+    "subtitle": "Cinq étapes rapides pour devenir visible pour les acheteurs et éligible au matching de projets",
+    "skip": "Passer pour l'instant",
+    "continue": "Continuer",
+    "saveContinue": "Enregistrer et continuer",
+    "finish": "Terminer la configuration",
+    "saved": "Enregistré",
+    "steps": {
+      "company": "Entreprise",
+      "warehouse": "Entrepôt",
+      "activities": "Activités",
+      "payout": "Paiement",
+      "product": "Premier produit"
+    },
+    "company": {
+      "name": "Nom de l'entreprise",
+      "website": "Site web",
+      "type": "Type d'activité",
+      "country": "Pays",
+      "email": "E-mail de contact de la boutique",
+      "emailHint": "Les demandes de devis des acheteurs arrivent ici",
+      "phone": "Téléphone",
+      "description": "À propos de votre entreprise"
+    },
+    "warehouse": {
+      "why": "Les acheteurs voient votre distance et les émissions de livraison sur chaque fiche de recommandation — cela part de l'emplacement de votre entrepôt. Épinglez-le précisément ; nous ne le devinons jamais à votre place.",
+      "name": "Nom de l'entrepôt",
+      "country": "Pays",
+      "address": "Adresse",
+      "city": "Ville",
+      "pin": "Épinglez l'emplacement de votre entrepôt",
+      "pinHelp": "C'est l'origine d'expédition utilisée pour les estimations de distance et de carbone de livraison",
+      "alreadyDone": "L'emplacement de votre entrepôt est déjà configuré."
+    },
+    "payout": {
+      "why": "Connectez un compte de paiement pour recevoir les règlements des commandes. Vous pouvez le faire plus tard — ce n'est pas nécessaire pour publier des produits ou recevoir des demandes de devis.",
+      "connect": "Connecter le compte de paiement",
+      "later": "Continuer — je le ferai plus tard"
+    },
+    "product": {
+      "why": "Les produits sont ce que voient les acheteurs et le moteur de matching. Ajoutez le premier maintenant, ou importez votre catalogue en masse.",
+      "createTitle": "Ajouter un produit",
+      "createBody": "Créez votre premier produit étape par étape",
+      "importTitle": "Import en masse",
+      "importBody": "Importez votre catalogue depuis un tableur"
+    }
+  },
+  "activitiesPicker": {
+    "findTitle": "Trouver des activités à ajouter",
+    "findHint": "Recherchez par nom — ou parcourez une catégorie si vous ne savez pas quoi chercher. Déclarer une activité fait apparaître votre boutique quand un client tese en a besoin.",
+    "searchPlaceholder": "Rechercher — essayez « pluie », « solaire », « zone humide »…",
+    "vertical": "Secteur",
+    "domain": "Domaine",
+    "allVerticals": "Tous les secteurs",
+    "allDomains": "Tous les domaines",
+    "verticals": {
+      "TOU": "Tourisme",
+      "AGRI": "Agriculture",
+      "NATURE": "Nature",
+      "GENERIC": "Général"
+    },
+    "domains": {
+      "CLIMATE": "Climat",
+      "NATURE": "Nature",
+      "NBS": "Solutions fondées sur la nature"
+    },
+    "searching": "Recherche…",
+    "searchFailed": "Impossible de charger les activités — réessayez.",
+    "noMatches": "Aucun résultat — essayez un mot plus général, ou parcourez par catégorie.",
+    "hasMore": "Premiers résultats affichés — affinez votre recherche pour en voir plus.",
+    "add": "Ajouter",
+    "addedLabel": "Ajoutée",
+    "added": "Ajoutée à vos activités",
+    "addFailed": "Impossible d'ajouter l'activité",
+    "removed": "Retirée",
+    "removeFailed": "Impossible de retirer",
+    "declaredTitle": "Vos activités déclarées ({{count}})",
+    "declaredEmpty": "Rien de déclaré pour l'instant — les activités déclarées sont le point de départ du moteur de matching.",
+    "declaredFailed": "Impossible de charger vos activités."
+  },
+  "verifiedBadge": {
+    "label": "tese Verified",
+    "tooltip": "Vérifié par tese après contrôle de l'identité et des références de l'entreprise",
+    "howToEarn": "Pas encore tese Verified — détenez au moins une certification de durabilité approuvée et non expirée, puis l'équipe tese peut accorder le badge après vérification de vos références."
+  },
+  "productSubmit": {
+    "saveAsDraft": "Enregistrer comme brouillon",
+    "submitForReview": "Soumettre à validation",
+    "publish": "Publier",
+    "reviewHint": "tese vérifie les produits avant leur mise en ligne",
+    "publishFailedFallback": "Créé, mais la publication a échoué — le produit a été soumis à validation à la place.",
+    "incompleteProfile": "Avant de soumettre, complétez : {{fields}}",
+    "missing": {
+      "activities": "vos activités de service",
+      "warehouse_coordinates": "l'emplacement de votre entrepôt",
+      "contact_email": "un e-mail de contact",
+      "price": "un prix de produit"
+    }
+  },
+  "matchability": {
+    "title": "Comment les acheteurs vous trouvent",
+    "subtitle": "Ce que voit le moteur de matching lorsqu'il recommande des fournisseurs pour un projet",
+    "score": "{{score}}% matchable",
+    "fix": "Corriger",
+    "detail": "{{done}} sur {{total}}",
+    "status": {
+      "ok": "OK",
+      "partial": "Partiel",
+      "missing": "Manquant",
+      "unknown": "—"
+    },
+    "signals": {
+      "coverage": {
+        "title": "Activités de service",
+        "consequence": "Le matching part des activités — sans les vôtres, les projets qui ont besoin de vous ne peuvent pas vous faire remonter en premier"
+      },
+      "geo": {
+        "title": "Emplacement de l'entrepôt",
+        "consequence": "Les acheteurs ne voient ni votre distance ni le coût carbone de la livraison — et cela apparaît sur chaque fiche"
+      },
+      "contact_email": {
+        "title": "E-mail de contact",
+        "consequence": "Les demandes de devis n'ont nulle part où arriver — un acheteur intéressé est une impasse"
+      },
+      "prices": {
+        "title": "Prix",
+        "consequence": "Les produits sans prix ne peuvent être ni comparés ni budgétés — ni soumis à validation"
+      },
+      "products": {
+        "title": "Produits",
+        "consequence": "Sans produits, ni les acheteurs ni le moteur de matching n'ont rien à trouver"
+      },
+      "images": {
+        "title": "Photos des produits",
+        "consequence": "Les fiches sans photo sont ignorées — les acheteurs passent devant ce qu'ils ne voient pas"
+      },
+      "ship_to": {
+        "title": "Destinations de livraison",
+        "consequence": "Les acheteurs ne peuvent pas savoir si vous livrez chez eux"
+      },
+      "certifications": {
+        "title": "Certifications de durabilité",
+        "consequence": "Les certifications vérifiées apparaissent comme badges de confiance — et conditionnent le badge tese Verified"
+      }
+    }
+  },
+  "productImport": {
+    "validating": "Validation de votre fichier…",
+    "reportTitle": "Rapport de validation",
+    "validRows": "produits prêts à importer",
+    "errorRows": "lignes en erreur",
+    "rowLabel": "Ligne {{row}}",
+    "moreErrors": "…et {{count}} erreur(s) de plus — corrigez-les puis re-téléversez.",
+    "profileBlocked": "Avant d'importer, complétez : {{fields}}",
+    "reviewNote": "Les produits importés sont soumis à la validation tese — ils seront en ligne une fois approuvés.",
+    "commit": "Importer {{count}} produit(s)",
+    "committedTitle": "Import soumis",
+    "committedBody": "Vos produits ont été soumis à validation — ils seront en ligne une fois approuvés."
   }
 }

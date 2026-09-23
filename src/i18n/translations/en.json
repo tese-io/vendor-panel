@@ -2653,7 +2653,10 @@
         "placeholder": "wrong_size",
         "tooltip": "The value should be a unique identifier for the return reason."
       },
-      "label": { "label": "Label", "placeholder": "Wrong size" },
+      "label": {
+        "label": "Label",
+        "placeholder": "Wrong size"
+      },
       "description": {
         "label": "Description",
         "placeholder": "Customer received the wrong size"
@@ -2669,7 +2672,27 @@
   "register": {
     "title": "Join Tese Seller Panel",
     "hint": "Sign up to start selling",
-    "alreadySeller": "Already have an account? - <0>Sign In</0>"
+    "alreadySeller": "Already have an account? - <0>Sign In</0>",
+    "companyName": "Company name",
+    "website": "Company website (https://…)",
+    "companyType": "Business type",
+    "companyTypes": {
+      "manufacturer": "Manufacturer",
+      "distributor": "Distributor",
+      "wholesaler": "Wholesaler",
+      "service_provider": "Service provider",
+      "startup": "Startup",
+      "other": "Other"
+    },
+    "country": "Country",
+    "emailHint": "Use your company email — it helps us verify your business faster.",
+    "confirmPassword": "Confirm Password",
+    "passwordsDontMatch": "Password and Confirm Password don't match",
+    "emailTaken": "Provided email is already taken",
+    "submit": "Sign up",
+    "successTitle": "Thank You for registering!",
+    "successBody": "You may need to wait for admin authorization before logging in. A confirmation email will be sent to you shortly.",
+    "backToLogin": "Back to login page"
   },
   "invite": {
     "title": "Welcome to Tese Seller Panel",
@@ -3008,5 +3031,234 @@
     "minutes_other": "Minutes",
     "seconds_one": "Second",
     "seconds_other": "Seconds"
+  },
+  "pendingApproval": {
+    "title": "Application status",
+    "receivedTitle": "Application received",
+    "receivedBody": "Thanks for applying to sell on the tese marketplace. Our team is reviewing your application — you'll receive an email as soon as it's approved.",
+    "claimBody": "Your company already has a store on the tese marketplace. We've asked the tese team to confirm your access to it — you'll receive an email once it's approved.",
+    "approvedTitle": "Application approved",
+    "approvedBody": "Your store is ready. Sign in to get started.",
+    "declinedTitle": "Application declined",
+    "declinedBody": "Unfortunately your application was not approved.",
+    "reviewerReason": "Reason from the review team",
+    "submittedOn": "Submitted on {{date}}",
+    "reviewedOn": "Reviewed on {{date}}",
+    "contactSupport": "Contact support",
+    "goToLogin": "Go to sign in",
+    "logOut": "Log out",
+    "noApplication": "We couldn't find an application for this account.",
+    "startApplication": "Start your application"
+  },
+  "dashboardChecklist": {
+    "title": "Set up your store",
+    "subtitle": "Complete these steps so buyers can find you and tese can match you to projects",
+    "progress": "{{done}} of {{known}} complete",
+    "successLine": "Your store setup is complete — you're visible to buyers and ready for matching.",
+    "unknown": "—",
+    "optional": "Optional",
+    "pricedDetail": "{{priced}} of {{total}} products have a price",
+    "rows": {
+      "store_information": {
+        "title": "Complete your store information",
+        "description": "Company details buyers see on your profile",
+        "action": "Manage"
+      },
+      "locations_shipping": {
+        "title": "Set up locations & shipping",
+        "description": "Buyers see your distance and delivery emissions on every card — that needs your warehouse location",
+        "action": "Set up"
+      },
+      "activities": {
+        "title": "Declare the service activities you cover",
+        "description": "Matching starts from activities — declaring yours surfaces you when a tese customer needs them",
+        "action": "Declare"
+      },
+      "contact_email": {
+        "title": "Add a store contact email",
+        "description": "Quote requests from buyers need somewhere to land",
+        "action": "Add"
+      },
+      "stripe_connection": {
+        "title": "Connect your payout account",
+        "description": "Required to receive payments for orders",
+        "action": "Connect"
+      },
+      "products": {
+        "title": "Add your first product",
+        "description": "Products are what buyers and the matching engine see",
+        "action": "Add"
+      },
+      "prices": {
+        "title": "Price your products",
+        "description": "Unpriced products can't be compared — and can't be submitted for review",
+        "action": "Review"
+      },
+      "certifications": {
+        "title": "Add sustainability certifications",
+        "description": "Verified certifications appear as badges to buyers and earn the tese Verified badge",
+        "action": "Add"
+      }
+    }
+  },
+  "onboardingWizard": {
+    "title": "Set up your store",
+    "subtitle": "Five quick steps to become visible to buyers and matchable for projects",
+    "skip": "Skip for now",
+    "continue": "Continue",
+    "saveContinue": "Save & continue",
+    "finish": "Finish setup",
+    "saved": "Saved",
+    "steps": {
+      "company": "Company",
+      "warehouse": "Warehouse",
+      "activities": "Activities",
+      "payout": "Payout",
+      "product": "First product"
+    },
+    "company": {
+      "name": "Company name",
+      "website": "Website",
+      "type": "Business type",
+      "country": "Country",
+      "email": "Store contact email",
+      "emailHint": "Quote requests from buyers land here",
+      "phone": "Phone",
+      "description": "About your company"
+    },
+    "warehouse": {
+      "why": "Buyers see your distance and delivery emissions on every recommendation card — that starts from your warehouse location. Pin it precisely; we never guess it for you.",
+      "name": "Warehouse name",
+      "country": "Country",
+      "address": "Address",
+      "city": "City",
+      "pin": "Pin your warehouse location",
+      "pinHelp": "This is the shipping origin used for distance and delivery-carbon estimates",
+      "alreadyDone": "Your warehouse location is already set up."
+    },
+    "payout": {
+      "why": "Connect a payout account to receive payments for orders. You can do this later — it isn't needed to list products or receive quote requests.",
+      "connect": "Connect payout account",
+      "later": "Continue — I'll do this later"
+    },
+    "product": {
+      "why": "Products are what buyers and the matching engine see. Add your first one now, or bulk-upload your catalog.",
+      "createTitle": "Add a product",
+      "createBody": "Create your first product step by step",
+      "importTitle": "Bulk upload",
+      "importBody": "Import your catalog from a spreadsheet"
+    }
+  },
+  "activitiesPicker": {
+    "findTitle": "Find activities to add",
+    "findHint": "Search by name — or browse a category if you're not sure what to search for. Declaring an activity surfaces your store when a tese customer needs it.",
+    "searchPlaceholder": "Search — try “rainwater”, “solar”, “wetland”…",
+    "vertical": "Industry",
+    "domain": "Domain",
+    "allVerticals": "All industries",
+    "allDomains": "All domains",
+    "verticals": {
+      "TOU": "Tourism",
+      "AGRI": "Agriculture",
+      "NATURE": "Nature",
+      "GENERIC": "General"
+    },
+    "domains": {
+      "CLIMATE": "Climate",
+      "NATURE": "Nature",
+      "NBS": "Nature-based Solutions"
+    },
+    "searching": "Searching…",
+    "searchFailed": "Couldn't load activities — try again.",
+    "noMatches": "No matches — try a broader word, or browse by category.",
+    "hasMore": "Showing the first results — refine your search to see more.",
+    "add": "Add",
+    "addedLabel": "Added",
+    "added": "Added to your activities",
+    "addFailed": "Could not add activity",
+    "removed": "Removed",
+    "removeFailed": "Could not remove",
+    "declaredTitle": "Your declared activities ({{count}})",
+    "declaredEmpty": "Nothing declared yet — declared activities are what the matching engine starts from.",
+    "declaredFailed": "Couldn't load your activities."
+  },
+  "verifiedBadge": {
+    "label": "tese Verified",
+    "tooltip": "Verified by tese after checking identity and business credentials",
+    "howToEarn": "Not tese Verified yet — hold at least one approved, unexpired sustainability certification, then the tese team can grant the badge after checking your business credentials."
+  },
+  "productSubmit": {
+    "saveAsDraft": "Save as draft",
+    "submitForReview": "Submit for review",
+    "publish": "Publish",
+    "reviewHint": "tese reviews products before they go live",
+    "publishFailedFallback": "Created, but publishing failed — the product was submitted for review instead.",
+    "incompleteProfile": "Before submitting, complete: {{fields}}",
+    "missing": {
+      "activities": "your service activities",
+      "warehouse_coordinates": "your warehouse location",
+      "contact_email": "a store contact email",
+      "price": "a product price"
+    }
+  },
+  "matchability": {
+    "title": "How buyers find you",
+    "subtitle": "What the matching engine sees when it recommends suppliers for a project",
+    "score": "{{score}}% matchable",
+    "fix": "Fix",
+    "detail": "{{done}} of {{total}}",
+    "status": {
+      "ok": "OK",
+      "partial": "Partial",
+      "missing": "Missing",
+      "unknown": "—"
+    },
+    "signals": {
+      "coverage": {
+        "title": "Service activities",
+        "consequence": "Matching starts from activities — without yours declared, projects that need you can't surface you first"
+      },
+      "geo": {
+        "title": "Warehouse location",
+        "consequence": "Buyers can't see how far you are, or what delivery costs in carbon — and that appears on every card"
+      },
+      "contact_email": {
+        "title": "Contact email",
+        "consequence": "Quote requests have nowhere to land — an interested buyer is a dead end"
+      },
+      "prices": {
+        "title": "Prices",
+        "consequence": "Unpriced products can't be compared or budgeted — and can't be submitted for review"
+      },
+      "products": {
+        "title": "Products",
+        "consequence": "No products means nothing for buyers or the matching engine to find"
+      },
+      "images": {
+        "title": "Product photos",
+        "consequence": "Cards without a photo get skipped — buyers scroll past what they can't see"
+      },
+      "ship_to": {
+        "title": "Shipping destinations",
+        "consequence": "Buyers can't tell whether you deliver to them at all"
+      },
+      "certifications": {
+        "title": "Sustainability certifications",
+        "consequence": "Verified certifications appear as trust badges — and are the precondition for tese Verified"
+      }
+    }
+  },
+  "productImport": {
+    "validating": "Validating your file…",
+    "reportTitle": "Validation report",
+    "validRows": "products ready to import",
+    "errorRows": "rows with errors",
+    "rowLabel": "Row {{row}}",
+    "moreErrors": "…and {{count}} more error(s) — fix these first and re-upload.",
+    "profileBlocked": "Before importing, complete: {{fields}}",
+    "reviewNote": "Imported products are submitted for tese review — they go live once approved.",
+    "commit": "Import {{count}} product(s)",
+    "committedTitle": "Import submitted",
+    "committedBody": "Your products were submitted for review — they go live once approved."
   }
 }
