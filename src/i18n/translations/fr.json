@@ -2820,10 +2820,15 @@
   "register": {
     "title": "Rejoignez le panneau vendeur Tese",
     "hint": "Inscrivez-vous pour commencer à vendre",
+    "sectionCompany": "Votre entreprise",
+    "sectionAccount": "Votre compte",
     "alreadySeller": "Vous avez déjà un compte ? - <0>Se connecter</0>",
     "companyName": "Nom de l'entreprise",
-    "website": "Site web de l'entreprise (https://…)",
+    "companyNamePlaceholder": "Le nom légal de votre entreprise",
+    "website": "Site web de l'entreprise",
+    "websitePlaceholder": "https://votre-entreprise.com",
     "companyType": "Type d'activité",
+    "selectType": "Choisir le type",
     "companyTypes": {
       "manufacturer": "Fabricant",
       "distributor": "Distributeur",
@@ -2833,8 +2838,11 @@
       "other": "Autre"
     },
     "country": "Pays",
+    "selectCountry": "Choisir le pays",
     "emailHint": "Utilisez votre e-mail professionnel — cela nous aide à vérifier votre entreprise plus rapidement.",
+    "emailPlaceholder": "vous@votre-entreprise.com",
     "confirmPassword": "Confirmer le mot de passe",
+    "passwordRequirements": "Votre mot de passe ne respecte pas encore tous les critères",
     "passwordsDontMatch": "Le mot de passe et sa confirmation ne correspondent pas",
     "emailTaken": "Cette adresse e-mail est déjà utilisée",
     "submit": "S'inscrire",
