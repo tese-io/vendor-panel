@@ -6,22 +6,31 @@
  */
 
 export type ConfigurationRulesResponse = {
-  configuration_rules?: Array<{ rule_type?: string; is_enabled?: boolean }>
+  // GET /vendor/configuration RETURNS A MAP {rule_type: boolean} — its
+  // OAS comment claims an array of {rule_type, is_enabled} rows, which
+  // is wrong (crashed /products/create on dev, 2026-09-23). Accept both.
+  configuration_rules?:
+    | Record<string, boolean>
+    | Array<{ rule_type?: string; is_enabled?: boolean }>
 } | null | undefined
 
 /**
  * D-01: review-before-visible is the launch state. On ANY doubt
- * (endpoint failed, rule missing) assume approval IS required — the
- * safe direction is never promising instant publication.
+ * (endpoint failed, rule missing, unexpected shape) assume approval IS
+ * required — the safe direction is never promising instant publication.
+ * Must NEVER throw: it runs during render.
  */
 export function getRequireApproval(config: ConfigurationRulesResponse): boolean {
-  const rule = config?.configuration_rules?.find(
-    (r) => r?.rule_type === "require_product_approval"
-  )
-  if (!rule || typeof rule.is_enabled !== "boolean") {
-    return true
+  const rules = config?.configuration_rules
+  if (Array.isArray(rules)) {
+    const rule = rules.find((r) => r?.rule_type === "require_product_approval")
+    return typeof rule?.is_enabled === "boolean" ? rule.is_enabled : true
   }
-  return rule.is_enabled
+  if (rules && typeof rules === "object") {
+    const value = (rules as Record<string, unknown>)["require_product_approval"]
+    return typeof value === "boolean" ? value : true
+  }
+  return true
 }
 
 export type SubmitActions = {
