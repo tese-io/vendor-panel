@@ -24,15 +24,39 @@ describe("getRequireApproval (D-01 default)", () => {
     ).toBe(true)
   })
 
-  it("fails SAFE (approval required) on any doubt", () => {
+  it("reads the REAL wire shape: a {rule_type: boolean} map", () => {
+    // GET /vendor/configuration returns a map, not the array its OAS
+    // comment describes — this exact mismatch crashed /products/create.
+    expect(
+      getRequireApproval({
+        configuration_rules: { require_product_approval: false },
+      })
+    ).toBe(false)
+    expect(
+      getRequireApproval({
+        configuration_rules: {
+          require_product_approval: true,
+          global_product_catalog: false,
+        },
+      })
+    ).toBe(true)
+  })
+
+  it("fails SAFE (approval required) on any doubt, never throwing", () => {
     expect(getRequireApproval(undefined)).toBe(true)
     expect(getRequireApproval(null)).toBe(true)
     expect(getRequireApproval({})).toBe(true)
     expect(getRequireApproval({ configuration_rules: [] })).toBe(true)
+    expect(getRequireApproval({ configuration_rules: {} })).toBe(true)
     expect(
       getRequireApproval({
         configuration_rules: [{ rule_type: "require_product_approval" }],
       })
+    ).toBe(true)
+    expect(
+      getRequireApproval({
+        configuration_rules: { require_product_approval: "yes" },
+      } as never)
     ).toBe(true)
   })
 })
