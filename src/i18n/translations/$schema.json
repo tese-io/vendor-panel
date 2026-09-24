@@ -10936,6 +10936,264 @@
       ],
       "additionalProperties": false
     },
+    "businessVerification": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "why": {
+          "type": "string"
+        },
+        "privacy": {
+          "type": "string"
+        },
+        "badges": {
+          "type": "object",
+          "properties": {
+            "under_review": {
+              "type": "string"
+            },
+            "declined": {
+              "type": "string"
+            },
+            "verified": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "under_review",
+            "declined",
+            "verified"
+          ],
+          "additionalProperties": false
+        },
+        "states": {
+          "type": "object",
+          "properties": {
+            "needed": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "body"
+              ],
+              "additionalProperties": false
+            },
+            "underReview": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "body"
+              ],
+              "additionalProperties": false
+            },
+            "declined": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title"
+              ],
+              "additionalProperties": false
+            },
+            "verified": {
+              "type": "object",
+              "properties": {
+                "body": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "body"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "needed",
+            "underReview",
+            "declined",
+            "verified"
+          ],
+          "additionalProperties": false
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "document": {
+              "type": "string"
+            },
+            "documentHint": {
+              "type": "string"
+            },
+            "upload": {
+              "type": "string"
+            },
+            "uploading": {
+              "type": "string"
+            },
+            "replace": {
+              "type": "string"
+            },
+            "reading": {
+              "type": "string"
+            },
+            "prefilled": {
+              "type": "string"
+            },
+            "documentKind": {
+              "type": "string"
+            },
+            "documentKindHint": {
+              "type": "string"
+            },
+            "legalName": {
+              "type": "string"
+            },
+            "registrationNumber": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "document",
+            "documentHint",
+            "upload",
+            "uploading",
+            "replace",
+            "reading",
+            "prefilled",
+            "documentKind",
+            "documentKindHint",
+            "legalName",
+            "registrationNumber",
+            "country"
+          ],
+          "additionalProperties": false
+        },
+        "kinds": {
+          "type": "object",
+          "properties": {
+            "certificate_of_incorporation": {
+              "type": "string"
+            },
+            "registration_extract": {
+              "type": "string"
+            },
+            "trade_licence": {
+              "type": "string"
+            },
+            "tax_registration": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "certificate_of_incorporation",
+            "registration_extract",
+            "trade_licence",
+            "tax_registration"
+          ],
+          "additionalProperties": false
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "submit": {
+              "type": "string"
+            },
+            "viewDocument": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "submit",
+            "viewDocument"
+          ],
+          "additionalProperties": false
+        },
+        "submittedOn": {
+          "type": "string"
+        },
+        "reviewedOn": {
+          "type": "string"
+        },
+        "loading": {
+          "type": "string"
+        },
+        "toasts": {
+          "type": "object",
+          "properties": {
+            "submitted": {
+              "type": "string"
+            },
+            "submitFailed": {
+              "type": "string"
+            },
+            "uploadFailed": {
+              "type": "string"
+            },
+            "tooLarge": {
+              "type": "string"
+            },
+            "documentRequired": {
+              "type": "string"
+            },
+            "documentUnavailable": {
+              "type": "string"
+            },
+            "loadFailed": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "submitted",
+            "submitFailed",
+            "uploadFailed",
+            "tooLarge",
+            "documentRequired",
+            "documentUnavailable",
+            "loadFailed"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "title",
+        "why",
+        "privacy",
+        "badges",
+        "states",
+        "fields",
+        "kinds",
+        "actions",
+        "submittedOn",
+        "reviewedOn",
+        "loading",
+        "toasts"
+      ],
+      "additionalProperties": false
+    },
     "invite": {
       "type": "object",
       "properties": {
@@ -12293,6 +12551,7 @@
     "productSubmit",
     "matchability",
     "productImport",
+    "businessVerification",
     "invite",
     "resetPassword",
     "workflowExecutions",

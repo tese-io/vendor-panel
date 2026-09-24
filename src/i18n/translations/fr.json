@@ -3064,5 +3064,67 @@
     "commit": "Importer {{count}} produit(s)",
     "committedTitle": "Import soumis",
     "committedBody": "Vos produits ont été soumis à validation — ils seront en ligne une fois approuvés."
+  },
+  "businessVerification": {
+    "title": "Vérification de l'entreprise",
+    "why": "Nous vérifions chaque entreprise de la place de marché pour que les acheteurs sachent à qui ils ont affaire.",
+    "privacy": "Votre document est stocké de manière privée et n'est ouvert que par l'équipe de vérification tese via des liens à durée limitée. Il n'est jamais affiché publiquement.",
+    "badges": {
+      "under_review": "En cours de vérification",
+      "declined": "Refusé",
+      "verified": "Vérifié"
+    },
+    "states": {
+      "needed": {
+        "title": "Vérification requise",
+        "body": "Téléversez un document officiel d'enregistrement pour soumettre des produits et recevoir des demandes de devis."
+      },
+      "underReview": {
+        "title": "Documents en cours de vérification",
+        "body": "L'équipe tese vérifie votre document. Le résultat s'affichera ici."
+      },
+      "declined": {
+        "title": "Refusé"
+      },
+      "verified": {
+        "body": "Votre entreprise a été vérifiée le {{date}}."
+      }
+    },
+    "fields": {
+      "document": "Document d'enregistrement",
+      "documentHint": "PDF ou image, 10 Mo max. Au choix : certificat d'incorporation, extrait du registre des entreprises, licence commerciale ou certificat d'enregistrement fiscal/TVA. À Maurice : votre carte BRN ou l'extrait du Registrar of Companies.",
+      "upload": "Téléverser le document",
+      "uploading": "Téléversement…",
+      "replace": "Remplacer le document",
+      "reading": "Lecture du document pour pré-remplir les champs…",
+      "prefilled": "Nous avons pré-rempli ce que nous avons pu lire — vérifiez chaque champ avant d'envoyer.",
+      "documentKind": "Type de document",
+      "documentKindHint": "Maurice : carte BRN ou extrait du Registrar of Companies",
+      "legalName": "Raison sociale enregistrée",
+      "registrationNumber": "Numéro d'enregistrement",
+      "country": "Pays d'enregistrement"
+    },
+    "kinds": {
+      "certificate_of_incorporation": "Certificat d'incorporation",
+      "registration_extract": "Extrait du registre des entreprises / carte BRN",
+      "trade_licence": "Licence commerciale",
+      "tax_registration": "Certificat d'enregistrement fiscal / TVA"
+    },
+    "actions": {
+      "submit": "Envoyer pour vérification",
+      "viewDocument": "Ouvrir mon document"
+    },
+    "submittedOn": "Envoyé le",
+    "reviewedOn": "Vérifié le",
+    "loading": "Chargement…",
+    "toasts": {
+      "submitted": "Envoyé — l'équipe tese va vérifier votre document",
+      "submitFailed": "Impossible d'envoyer votre vérification",
+      "uploadFailed": "Échec du téléversement",
+      "tooLarge": "Fichier trop volumineux — 10 Mo max",
+      "documentRequired": "Téléversez d'abord votre document d'enregistrement",
+      "documentUnavailable": "Impossible d'ouvrir le document",
+      "loadFailed": "Impossible de charger l'état de votre vérification"
+    }
   }
 }

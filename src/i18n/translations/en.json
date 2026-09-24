@@ -3272,5 +3272,67 @@
     "commit": "Import {{count}} product(s)",
     "committedTitle": "Import submitted",
     "committedBody": "Your products were submitted for review — they go live once approved."
+  },
+  "businessVerification": {
+    "title": "Business verification",
+    "why": "We verify every business on the marketplace so buyers know who they're dealing with.",
+    "privacy": "Your document is stored privately and only opened by the tese review team through expiring links. It is never shown publicly.",
+    "badges": {
+      "under_review": "Under review",
+      "declined": "Declined",
+      "verified": "Verified"
+    },
+    "states": {
+      "needed": {
+        "title": "Verification needed",
+        "body": "Upload one official registration document to submit products and receive quote requests."
+      },
+      "underReview": {
+        "title": "Documents under review",
+        "body": "The tese team is checking your document. You'll see the result here."
+      },
+      "declined": {
+        "title": "Declined"
+      },
+      "verified": {
+        "body": "Your business was verified on {{date}}."
+      }
+    },
+    "fields": {
+      "document": "Registration document",
+      "documentHint": "PDF or image, max 10 MB. Any one of: certificate of incorporation, business registration extract, trade licence, or tax/VAT registration. In Mauritius: your BRN card or Registrar of Companies extract.",
+      "upload": "Upload document",
+      "uploading": "Uploading…",
+      "replace": "Replace document",
+      "reading": "Reading the document to pre-fill the fields…",
+      "prefilled": "We pre-filled what we could read — please check every field before submitting.",
+      "documentKind": "Document type",
+      "documentKindHint": "Mauritius: BRN card or Registrar of Companies extract",
+      "legalName": "Registered legal name",
+      "registrationNumber": "Registration number",
+      "country": "Country of registration"
+    },
+    "kinds": {
+      "certificate_of_incorporation": "Certificate of incorporation",
+      "registration_extract": "Business registration extract / BRN card",
+      "trade_licence": "Trade licence",
+      "tax_registration": "Tax / VAT registration certificate"
+    },
+    "actions": {
+      "submit": "Submit for verification",
+      "viewDocument": "Open my document"
+    },
+    "submittedOn": "Submitted on",
+    "reviewedOn": "Reviewed on",
+    "loading": "Loading…",
+    "toasts": {
+      "submitted": "Submitted — the tese team will review your document",
+      "submitFailed": "Could not submit your verification",
+      "uploadFailed": "Upload failed",
+      "tooLarge": "File too large — max 10 MB",
+      "documentRequired": "Upload your registration document first",
+      "documentUnavailable": "Could not open the document",
+      "loadFailed": "Could not load your verification status"
+    }
   }
 }
