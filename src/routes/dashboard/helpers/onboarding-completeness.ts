@@ -151,14 +151,17 @@ export function buildCompleteness(inputs: CompletenessInputs): Completeness {
 }
 
 /**
- * Fire-on-mount fix: the backend recalculation POST should run only when
- * a backend flag is actually false, and once per browser session.
+ * The backend recalculation POST runs only when a backend flag is
+ * actually false, and at most once per dashboard visit (the caller's
+ * mount ref supplies `alreadyRanThisVisit`). Not per-session: flags
+ * become satisfiable mid-session, and recalc naturally stops firing
+ * once every flag is true.
  */
 export function shouldRecalculateOnboarding(
   flags: CompletenessInputs['flags'],
-  alreadyRanThisSession: boolean
+  alreadyRanThisVisit: boolean
 ): boolean {
-  if (alreadyRanThisSession || !flags) {
+  if (alreadyRanThisVisit || !flags) {
     return false
   }
   return (

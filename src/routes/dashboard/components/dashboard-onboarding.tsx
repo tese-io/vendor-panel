@@ -27,8 +27,6 @@ type DashboardProps = {
   } | null
 }
 
-const RECALC_SESSION_KEY = "onboarding-recalculated"
-
 /** Placeholder emails minted by the data migration don't count. */
 function normalizeContactEmail(email: string | null | undefined): string | null {
   const trimmed = (email || "").trim()
@@ -36,22 +34,6 @@ function normalizeContactEmail(email: string | null | undefined): string | null 
     return null
   }
   return trimmed
-}
-
-function readSessionFlag(): boolean {
-  try {
-    return sessionStorage.getItem(RECALC_SESSION_KEY) === "1"
-  } catch {
-    return true // storage blocked → be conservative, don't re-POST forever
-  }
-}
-
-function writeSessionFlag() {
-  try {
-    sessionStorage.setItem(RECALC_SESSION_KEY, "1")
-  } catch {
-    // ignore
-  }
 }
 
 function ChecklistRow({ row }: { row: CompletenessRow }) {
@@ -129,13 +111,15 @@ export const DashboardOnboarding = ({ flags }: DashboardProps) => {
   const { mutateAsync: recalculate } = useUpdateOnboarding()
   const recalcTried = useRef(false)
 
-  // Recalculate the backend flags only when one is actually false, and
-  // at most once per browser session (this used to fire on EVERY mount).
+  // Recalculate the backend flags when one is actually false — once per
+  // dashboard VISIT, not per session: flags become satisfiable mid-session
+  // (create a product, come back), and a session gate froze the checklist
+  // until the tab closed. Self-limiting: all-true flags never re-POST.
+  // Wait for flags to load before spending the once-per-mount shot.
   useEffect(() => {
-    if (recalcTried.current) return
+    if (recalcTried.current || !flags) return
     recalcTried.current = true
-    if (shouldRecalculateOnboarding(flags, readSessionFlag())) {
-      writeSessionFlag()
+    if (shouldRecalculateOnboarding(flags, false)) {
       recalculate().catch(() => undefined)
     }
   }, [flags, recalculate])

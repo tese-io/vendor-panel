@@ -98,7 +98,7 @@ describe("shouldRecalculateOnboarding (fire-on-mount fix)", () => {
     ).toBe(true)
   })
 
-  it("never fires twice in a session, and never without flags", () => {
+  it("never fires twice in one visit, and never without flags", () => {
     expect(
       shouldRecalculateOnboarding({ ...flags, products: false }, true)
     ).toBe(false)
