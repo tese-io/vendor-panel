@@ -6,7 +6,9 @@ import { useTranslation } from "react-i18next"
 
 import { FilePreview } from "../../../components/common/file-preview"
 import { RouteDrawer, useRouteModal } from "../../../components/modals"
+import { productsQueryKeys } from "../../../hooks/api/products"
 import { importProductsQuery } from "../../../lib/client/client"
+import { queryClient } from "../../../lib/query-client"
 import {
   INCOMPLETE_FIELD_KEYS,
   type IncompleteField,
@@ -92,6 +94,10 @@ const ProductImportContent = () => {
     setCommitting(true)
     try {
       await importProductsQuery(file)
+      // The import bypasses the react-query mutation hooks, so the
+      // products list won't refetch on its own — invalidate it here or
+      // the new rows only appear after a manual refresh.
+      queryClient.invalidateQueries({ queryKey: productsQueryKeys.lists() })
       toast.success(t("productImport.committedTitle"), {
         description: t("productImport.committedBody"),
       })
