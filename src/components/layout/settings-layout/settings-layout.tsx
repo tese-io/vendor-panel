@@ -61,6 +61,11 @@ const useSettingRoutes = (): INavItem[] => {
         label: "Certifications",
         to: "/settings/certifications",
       },
+      // KYB: one business registration document, reviewed by tese (B-23)
+      {
+        label: t("businessVerification.title"),
+        to: "/settings/business-verification",
+      },
     ],
     [t]
   )

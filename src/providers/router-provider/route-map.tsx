@@ -1037,6 +1037,15 @@ export const RouteMap: RouteObject[] = [
             }
           },
           {
+            // KYB: business registration document + review state (B-23/B-27)
+            path: 'business-verification',
+            errorElement: <ErrorBoundary />,
+            lazy: () => import('../../routes/settings/business-verification/business-verification'),
+            handle: {
+              breadcrumb: () => t('businessVerification.title')
+            }
+          },
+          {
             path: 'users',
             errorElement: <ErrorBoundary />,
             element: <Outlet />,
