@@ -10384,6 +10384,15 @@
             "phone": {
               "type": "string"
             },
+            "address": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "postalCode": {
+              "type": "string"
+            },
             "description": {
               "type": "string"
             }
@@ -10396,6 +10405,9 @@
             "email",
             "emailHint",
             "phone",
+            "address",
+            "city",
+            "postalCode",
             "description"
           ],
           "additionalProperties": false
@@ -10403,6 +10415,9 @@
         "warehouse": {
           "type": "object",
           "properties": {
+            "sameAsCompany": {
+              "type": "string"
+            },
             "why": {
               "type": "string"
             },
@@ -10429,6 +10444,7 @@
             }
           },
           "required": [
+            "sameAsCompany",
             "why",
             "name",
             "country",

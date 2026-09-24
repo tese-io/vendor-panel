@@ -4,8 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowUpRightOnBox, CloudArrowUp, Plus } from "@medusajs/icons"
 import {
   Button,
+  Checkbox,
   Heading,
   Input,
+  Label,
   ProgressTabs,
   Select,
   Text,
@@ -49,6 +51,12 @@ const CompanySchema = z.object({
   country_code: z.string().optional(),
   email: z.string().email().optional().or(z.literal("")),
   phone: z.string().optional(),
+  // Registered company address — required here because the backend's
+  // store_information flag needs all three, and this step is the only
+  // funnel surface that collects them (signup stays lean).
+  address_line: z.string().min(1),
+  city: z.string().min(1),
+  postal_code: z.string().min(1),
 })
 
 const WarehouseSchema = z.object({
@@ -88,6 +96,9 @@ const CompanyStep = ({ onDone }: { onDone: () => void }) => {
       country_code: seller?.country_code || "",
       email: seller?.email || "",
       phone: seller?.phone || "",
+      address_line: seller?.address_line || "",
+      city: seller?.city || "",
+      postal_code: seller?.postal_code || "",
     },
   })
 
@@ -207,6 +218,49 @@ const CompanyStep = ({ onDone }: { onDone: () => void }) => {
               </Form.Item>
             )}
           />
+          <Form.Field
+            control={form.control}
+            name="address_line"
+            render={({ field }) => (
+              <Form.Item>
+                <Form.Label>
+                  {t("onboardingWizard.company.address")}
+                </Form.Label>
+                <Form.Control>
+                  <Input {...field} data-testid="wizard-company-address" />
+                </Form.Control>
+                <Form.ErrorMessage />
+              </Form.Item>
+            )}
+          />
+          <Form.Field
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <Form.Item>
+                <Form.Label>{t("onboardingWizard.company.city")}</Form.Label>
+                <Form.Control>
+                  <Input {...field} data-testid="wizard-company-city" />
+                </Form.Control>
+                <Form.ErrorMessage />
+              </Form.Item>
+            )}
+          />
+          <Form.Field
+            control={form.control}
+            name="postal_code"
+            render={({ field }) => (
+              <Form.Item>
+                <Form.Label>
+                  {t("onboardingWizard.company.postalCode")}
+                </Form.Label>
+                <Form.Control>
+                  <Input {...field} data-testid="wizard-company-postal" />
+                </Form.Control>
+                <Form.ErrorMessage />
+              </Form.Item>
+            )}
+          />
         </div>
         <Form.Field
           control={form.control}
@@ -240,7 +294,9 @@ const WarehouseStep = ({
   alreadyComplete: boolean
 }) => {
   const { t } = useTranslation()
+  const { seller } = useMe()
   const { mutateAsync, isPending } = useCreateStockLocation()
+  const [sameAsCompany, setSameAsCompany] = useState(false)
 
   const form = useForm<z.infer<typeof WarehouseSchema>>({
     resolver: zodResolver(WarehouseSchema),
@@ -252,6 +308,25 @@ const WarehouseStep = ({
       geo: undefined,
     },
   })
+
+  // Convenience only: copies the registered address typed on the company
+  // step into the fields (still editable). The map pin stays required —
+  // an address is never turned into coordinates behind the user's back.
+  const applyCompanyAddress = (checked: boolean) => {
+    setSameAsCompany(checked)
+    if (!checked) return
+    if (seller?.address_line) {
+      form.setValue("address_1", seller.address_line, { shouldValidate: true })
+    }
+    if (seller?.city) {
+      form.setValue("city", seller.city, { shouldValidate: true })
+    }
+    if (seller?.country_code) {
+      form.setValue("country_code", seller.country_code, {
+        shouldValidate: true,
+      })
+    }
+  }
 
   const handleSubmit = form.handleSubmit(async (values) => {
     try {
@@ -292,6 +367,21 @@ const WarehouseStep = ({
         <Text size="small" className="text-ui-fg-subtle">
           {t("onboardingWizard.warehouse.why")}
         </Text>
+        {Boolean(seller?.address_line) && (
+          <div className="flex items-center gap-x-2">
+            <Checkbox
+              id="wizard-warehouse-same-address"
+              checked={sameAsCompany}
+              onCheckedChange={(checked) =>
+                applyCompanyAddress(checked === true)
+              }
+              data-testid="wizard-warehouse-same-address"
+            />
+            <Label htmlFor="wizard-warehouse-same-address" size="small">
+              {t("onboardingWizard.warehouse.sameAsCompany")}
+            </Label>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Form.Field
             control={form.control}
