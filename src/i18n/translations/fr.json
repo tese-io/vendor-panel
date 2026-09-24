@@ -2924,9 +2924,13 @@
       "email": "E-mail de contact de la boutique",
       "emailHint": "Les demandes de devis des acheteurs arrivent ici",
       "phone": "Téléphone",
+      "address": "Adresse enregistrée",
+      "city": "Ville",
+      "postalCode": "Code postal",
       "description": "À propos de votre entreprise"
     },
     "warehouse": {
+      "sameAsCompany": "Utiliser l'adresse de mon entreprise",
       "why": "Les acheteurs voient votre distance et les émissions de livraison sur chaque fiche de recommandation — cela part de l'emplacement de votre entrepôt. Épinglez-le précisément ; nous ne le devinons jamais à votre place.",
       "name": "Nom de l'entrepôt",
       "country": "Pays",

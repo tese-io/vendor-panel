@@ -3132,9 +3132,13 @@
       "email": "Store contact email",
       "emailHint": "Quote requests from buyers land here",
       "phone": "Phone",
+      "address": "Registered address",
+      "city": "City",
+      "postalCode": "Postal code",
       "description": "About your company"
     },
     "warehouse": {
+      "sameAsCompany": "Use my company address",
       "why": "Buyers see your distance and delivery emissions on every recommendation card — that starts from your warehouse location. Pin it precisely; we never guess it for you.",
       "name": "Warehouse name",
       "country": "Country",
