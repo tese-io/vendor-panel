@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   deriveSubmitActions,
   getRequireApproval,
+  INCOMPLETE_FIELD_LINKS,
   parseIncompleteProfile,
 } from "../product-submit"
 
@@ -98,5 +99,14 @@ describe("parseIncompleteProfile (D-04 gate errors)", () => {
         "(INCOMPLETE_SELLER_PROFILE:activities,warehouse_coordinates,contact_email,price)"
       )
     ).toEqual(["activities", "warehouse_coordinates", "contact_email", "price"])
+  })
+
+  it("KYB (B-24): business_verification is a known field with a fix link", () => {
+    expect(
+      parseIncompleteProfile("(INCOMPLETE_SELLER_PROFILE:business_verification)")
+    ).toEqual(["business_verification"])
+    expect(INCOMPLETE_FIELD_LINKS.business_verification).toBe(
+      "/settings/business-verification"
+    )
   })
 })

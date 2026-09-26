@@ -64,6 +64,7 @@ export const INCOMPLETE_FIELD_KEYS = {
   warehouse_coordinates: "productSubmit.missing.warehouse_coordinates",
   contact_email: "productSubmit.missing.contact_email",
   price: "productSubmit.missing.price",
+  business_verification: "productSubmit.missing.business_verification",
 } as const
 
 export type IncompleteField = keyof typeof INCOMPLETE_FIELD_KEYS
@@ -73,6 +74,7 @@ export const INCOMPLETE_FIELD_LINKS: Record<string, string> = {
   warehouse_coordinates: "/settings/locations",
   contact_email: "/settings/store",
   price: "/products",
+  business_verification: "/settings/business-verification",
 }
 
 /**

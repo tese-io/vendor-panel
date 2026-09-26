@@ -10693,13 +10693,17 @@
             },
             "price": {
               "type": "string"
+            },
+            "business_verification": {
+              "type": "string"
             }
           },
           "required": [
             "activities",
             "warehouse_coordinates",
             "contact_email",
-            "price"
+            "price",
+            "business_verification"
           ],
           "additionalProperties": false
         }
@@ -11124,11 +11128,15 @@
             },
             "viewDocument": {
               "type": "string"
+            },
+            "goToVerification": {
+              "type": "string"
             }
           },
           "required": [
             "submit",
-            "viewDocument"
+            "viewDocument",
+            "goToVerification"
           ],
           "additionalProperties": false
         },
