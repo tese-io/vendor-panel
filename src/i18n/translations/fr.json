@@ -3002,7 +3002,8 @@
       "activities": "vos activités de service",
       "warehouse_coordinates": "l'emplacement de votre entrepôt",
       "contact_email": "un e-mail de contact",
-      "price": "un prix de produit"
+      "price": "un prix de produit",
+      "business_verification": "la vérification de votre entreprise"
     }
   },
   "matchability": {
@@ -3112,7 +3113,8 @@
     },
     "actions": {
       "submit": "Envoyer pour vérification",
-      "viewDocument": "Ouvrir mon document"
+      "viewDocument": "Ouvrir mon document",
+      "goToVerification": "Vérifier votre entreprise"
     },
     "submittedOn": "Envoyé le",
     "reviewedOn": "Vérifié le",

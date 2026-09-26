@@ -6,6 +6,7 @@ import {
   shouldShowWizard,
   wizardDismissalKey,
 } from "../onboarding/helpers/wizard-steps"
+import { BusinessVerificationBanner } from "./components/business-verification-banner"
 import { DashboardCharts } from "./components/dashboard-charts"
 import { DashboardOnboarding } from "./components/dashboard-onboarding"
 import { MatchabilityCard } from "./components/matchability-card"
@@ -82,6 +83,7 @@ export const Dashboard = () => {
   // the core flags are done.
   return (
     <div className="flex flex-col gap-y-4">
+      <BusinessVerificationBanner />
       <DashboardOnboarding flags={flags} />
       {coreDone && <MatchabilityCard />}
       {coreDone && (

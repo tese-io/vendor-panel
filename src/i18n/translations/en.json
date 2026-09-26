@@ -3210,7 +3210,8 @@
       "activities": "your service activities",
       "warehouse_coordinates": "your warehouse location",
       "contact_email": "a store contact email",
-      "price": "a product price"
+      "price": "a product price",
+      "business_verification": "your business verification"
     }
   },
   "matchability": {
@@ -3320,7 +3321,8 @@
     },
     "actions": {
       "submit": "Submit for verification",
-      "viewDocument": "Open my document"
+      "viewDocument": "Open my document",
+      "goToVerification": "Verify your business"
     },
     "submittedOn": "Submitted on",
     "reviewedOn": "Reviewed on",
