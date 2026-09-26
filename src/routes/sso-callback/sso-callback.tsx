@@ -14,7 +14,14 @@ import { fetchQuery, sdk } from "../../lib/client"
 export const SSOCallback = () => {
   const [params] = useSearchParams()
   const navigate = useNavigate()
-  const [error, setError] = useState<string | null>(null)
+  // Which step failed, and what the server actually said. Kept on screen:
+  // bouncing to /login with a generic "sign-in failed" threw away the only
+  // evidence of what went wrong, which made a real failure undiagnosable
+  // without server logs.
+  const [failure, setFailure] = useState<{
+    stage: string
+    detail: string
+  } | null>(null)
   const [claimPending, setClaimPending] = useState<{
     seller_name?: string
   } | null>(null)
@@ -33,6 +40,8 @@ export const SSOCallback = () => {
     }
 
     ;(async () => {
+      // Named so a failure can say which hop broke.
+      let stage = "exchanging the tese.io sign-in key"
       try {
         // Exchange the one-time key. The SDK stores the returned token under
         // `medusa_auth_token`, which fetchQuery + the SDK both read.
@@ -40,9 +49,14 @@ export const SSOCallback = () => {
           sso_key: key,
         })
         if (typeof token !== "string") {
-          navigate("/login?reason=sso_failed", { replace: true })
+          setFailure({
+            stage,
+            detail:
+              "The exchange returned no session token. The one-time key is valid for 60 seconds and can only be used once.",
+          })
           return
         }
+        stage = "setting up your store"
 
         // Provision the store (first user of the tenant) or attach as a member,
         // and point the auth identity at the seller. Idempotent.
@@ -60,12 +74,19 @@ export const SSOCallback = () => {
         }
 
         // Refresh so the token carries the seller actor (member) link.
+        stage = "refreshing your session"
         await sdk.auth.refresh()
 
         navigate("/dashboard", { replace: true })
       } catch (e: any) {
-        setError(e?.message || "SSO login failed")
-        navigate("/login?reason=sso_failed", { replace: true })
+        const status = e?.status ?? e?.response?.status ?? e?.statusCode
+        setFailure({
+          stage,
+          detail:
+            [status ? `HTTP ${status}` : null, e?.message]
+              .filter(Boolean)
+              .join(" — ") || "Unknown error",
+        })
       }
     })()
   }, [navigate, params])
@@ -88,13 +109,22 @@ export const SSOCallback = () => {
               Back to login
             </a>
           </div>
-        ) : error ? (
-          <>
-            <p className="text-ui-fg-error mb-2">{error}</p>
+        ) : failure ? (
+          <div data-testid="sso-failure">
+            <p className="text-ui-fg-error mb-2 font-medium">
+              tese.io sign-in did not complete while {failure.stage}.
+            </p>
+            <p className="text-ui-fg-subtle mb-4 break-words font-mono text-xs">
+              {failure.detail}
+            </p>
+            <p className="text-ui-fg-subtle mb-4">
+              Starting again from tese.io issues a fresh key, which usually
+              resolves it. If it keeps happening, send this message to support.
+            </p>
             <a className="text-ui-fg-interactive" href="/login">
-              Back to login
+              Back to sign in
             </a>
-          </>
+          </div>
         ) : (
           <p className="text-ui-fg-subtle">Signing you in…</p>
         )}
