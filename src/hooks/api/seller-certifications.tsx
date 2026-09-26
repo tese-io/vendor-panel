@@ -104,6 +104,28 @@ export const useCertificationCatalog = (
   })
 }
 
+/**
+ * G-12: uploaded proof files sit on the private bucket, so "open" goes
+ * through a short-lived signed link from Mercur. Pasted registry URLs come
+ * back unsigned. Cached just under the link's 5-minute TTL.
+ */
+export const useSignedCertificationDocumentUrl = (
+  id: string,
+  index: number,
+  enabled: boolean
+) =>
+  useQuery<{ url: string; signed: boolean; expires_in?: number }, FetchError>({
+    queryKey: ["seller-certification-doc-url", id, index],
+    queryFn: () =>
+      fetchQuery(
+        `/vendor/seller-certifications/${encodeURIComponent(id)}/document-url`,
+        { method: "GET", query: { index: String(index) } }
+      ),
+    enabled,
+    staleTime: 4 * 60_000,
+    gcTime: 4 * 60_000,
+  })
+
 // NOTE on the spread pattern below: extracting the caller's onSuccess
 // (and onError) BEFORE the spread and re-invoking them AFTER the
 // query invalidation is deliberate. React Query keeps only the last
