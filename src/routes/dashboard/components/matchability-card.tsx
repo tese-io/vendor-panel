@@ -22,6 +22,7 @@ const SIGNAL_LINKS: Record<MatchabilitySignal["key"], string> = {
   products: "/products/create",
   images: "/products",
   ship_to: "/settings/locations",
+  weight: "/products",
   certifications: "/settings/certifications",
 }
 

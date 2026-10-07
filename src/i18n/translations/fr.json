@@ -3047,6 +3047,10 @@
         "title": "Destinations de livraison",
         "consequence": "Les acheteurs ne peuvent pas savoir si vous livrez chez eux"
       },
+      "weight": {
+        "title": "Poids du produit",
+        "consequence": "Sans poids, votre fiche affiche la distance mais pas les émissions de livraison — les acheteurs qui comparent le carbone ne voient rien"
+      },
       "certifications": {
         "title": "Certifications de durabilité",
         "consequence": "Les certifications vérifiées apparaissent comme badges de confiance — et conditionnent le badge tese Verified"
