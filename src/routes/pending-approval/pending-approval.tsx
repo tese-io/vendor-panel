@@ -2,6 +2,8 @@ import { Alert, Button, Heading, StatusBadge, Text } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
 
+import { ReapplyForm } from "./reapply-form"
+
 import AvatarBox from "../../components/common/logo-box/avatar-box"
 import { useLogout } from "../../hooks/api/auth"
 import { useSellerApplication } from "../../hooks/api/seller-application"
@@ -120,6 +122,12 @@ export const PendingApproval = () => {
             </div>
 
             <div className="mt-2 flex w-full flex-col gap-y-2">
+              {/* A decline tells the applicant what to fix; this is where
+                  they fix it. The backend has always allowed a second
+                  application — only the route to one was missing. */}
+              {application.status === "declined" && application.reapply && (
+                <ReapplyForm reapply={application.reapply} />
+              )}
               {application.status === "approved" ? (
                 <Button asChild className="tese-btn-primary w-full" data-testid="pending-approval-login-button">
                   <Link to="/login">{t("pendingApproval.goToLogin")}</Link>
