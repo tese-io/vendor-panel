@@ -10850,6 +10850,19 @@
               "required": ["title", "consequence"],
               "additionalProperties": false
             },
+            "weight": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "consequence": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "consequence"],
+              "additionalProperties": false
+            },
             "certifications": {
               "type": "object",
               "properties": {
@@ -10872,6 +10885,7 @@
             "products",
             "images",
             "ship_to",
+            "weight",
             "certifications"
           ],
           "additionalProperties": false

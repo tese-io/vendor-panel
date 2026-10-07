@@ -12,6 +12,7 @@ export type MatchabilitySignal = {
     | "products"
     | "images"
     | "ship_to"
+    | "weight"
     | "certifications"
   status: "ok" | "partial" | "missing" | "unknown"
   detail?: { done: number; total: number }
