@@ -3346,5 +3346,10 @@
       "documentUnavailable": "Could not open the document",
       "loadFailed": "Could not load your verification status"
     }
+  },
+  "variantPricing": {
+    "currencies": "Currencies to price in",
+    "currenciesHint": "Add only the currencies you actually sell in — you can add more at any time.",
+    "addCurrency": "Add a currency"
   }
 }

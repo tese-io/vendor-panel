@@ -10925,6 +10925,22 @@
       ],
       "additionalProperties": false
     },
+    "variantPricing": {
+      "type": "object",
+      "properties": {
+        "currencies": {
+          "type": "string"
+        },
+        "currenciesHint": {
+          "type": "string"
+        },
+        "addCurrency": {
+          "type": "string"
+        }
+      },
+      "required": ["currencies", "currenciesHint", "addCurrency"],
+      "additionalProperties": false
+    },
     "productImport": {
       "type": "object",
       "properties": {
@@ -12596,6 +12612,7 @@
     "productSubmit",
     "matchability",
     "productImport",
+    "variantPricing",
     "businessVerification",
     "invite",
     "resetPassword",
