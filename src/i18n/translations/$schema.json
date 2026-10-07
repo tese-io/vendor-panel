@@ -2245,9 +2245,12 @@
               "properties": {
                 "label": {
                   "type": "string"
+                },
+                "hint": {
+                  "type": "string"
                 }
               },
-              "required": ["label"],
+              "required": ["label", "hint"],
               "additionalProperties": false
             },
             "options": {

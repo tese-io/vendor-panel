@@ -604,7 +604,8 @@
         "label": "Height"
       },
       "weight": {
-        "label": "Weight"
+        "label": "Weight (grams)",
+        "hint": "Used for the delivery-emissions figure buyers see on your card. Enter grams — 12 kg is 12000."
       },
       "options": {
         "label": "Product options",
