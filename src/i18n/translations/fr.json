@@ -583,7 +583,8 @@
         "label": "Hauteur"
       },
       "weight": {
-        "label": "Poids"
+        "label": "Poids (grammes)",
+        "hint": "Sert au calcul des émissions de livraison affiché sur votre fiche. Saisissez des grammes — 12 kg correspond à 12000."
       },
       "options": {
         "label": "Options de produit",
