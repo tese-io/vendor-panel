@@ -2815,7 +2815,12 @@
     "goToLogin": "Aller à la connexion",
     "logOut": "Se déconnecter",
     "noApplication": "Aucune candidature trouvée pour ce compte.",
-    "startApplication": "Commencer votre candidature"
+    "startApplication": "Commencer votre candidature",
+    "reapply": "Modifier votre candidature et postuler à nouveau",
+    "reapplyHint": "Corrigez ce que l'équipe de révision a demandé, puis renvoyez votre candidature. Vos identifiants de connexion restent les mêmes.",
+    "reapplySubmit": "Renvoyer la candidature",
+    "reapplyCancel": "Annuler",
+    "reapplyFailed": "Impossible d'envoyer votre candidature — veuillez réessayer."
   },
   "register": {
     "title": "Rejoignez le panneau vendeur Tese",

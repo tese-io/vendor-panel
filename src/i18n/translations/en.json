@@ -3056,7 +3056,12 @@
     "goToLogin": "Go to sign in",
     "logOut": "Log out",
     "noApplication": "We couldn't find an application for this account.",
-    "startApplication": "Start your application"
+    "startApplication": "Start your application",
+    "reapply": "Update your application and re-apply",
+    "reapplyHint": "Correct what the review team asked for, then send your application again. Your sign-in details stay the same.",
+    "reapplySubmit": "Send application again",
+    "reapplyCancel": "Cancel",
+    "reapplyFailed": "Could not send your application — please try again."
   },
   "dashboardChecklist": {
     "title": "Set up your store",

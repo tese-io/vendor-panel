@@ -10105,6 +10105,21 @@
         },
         "startApplication": {
           "type": "string"
+        },
+        "reapply": {
+          "type": "string"
+        },
+        "reapplyHint": {
+          "type": "string"
+        },
+        "reapplySubmit": {
+          "type": "string"
+        },
+        "reapplyCancel": {
+          "type": "string"
+        },
+        "reapplyFailed": {
+          "type": "string"
         }
       },
       "required": [
@@ -10123,7 +10138,12 @@
         "goToLogin",
         "logOut",
         "noApplication",
-        "startApplication"
+        "startApplication",
+        "reapply",
+        "reapplyHint",
+        "reapplySubmit",
+        "reapplyCancel",
+        "reapplyFailed"
       ],
       "additionalProperties": false
     },
