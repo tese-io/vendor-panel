@@ -3,6 +3,14 @@ import { i18n } from "../../../components/utilities/i18n/i18n"
 import { optionalFloat, optionalInt } from "../../../lib/validation"
 import { decorateVariantsWithDefaultValues } from "./utils"
 
+/**
+ * The option Medusa invents when a product has no real options, so that
+ * it still has one variant. The variants grid uses these to tell a
+ * synthetic option from one the vendor actually defined.
+ */
+export const DEFAULT_OPTION_TITLE = "Default option"
+export const DEFAULT_OPTION_VALUE = "Default option value"
+
 export const MediaSchema = z.object({
   id: z.string().optional(),
   url: z.string(),
@@ -126,8 +134,8 @@ export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<
   sales_channels: [],
   options: [
     {
-      title: "Default option",
-      values: ["Default option value"],
+      title: DEFAULT_OPTION_TITLE,
+      values: [DEFAULT_OPTION_VALUE],
     },
   ],
   variants: decorateVariantsWithDefaultValues([
@@ -136,7 +144,7 @@ export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<
       should_create: true,
       variant_rank: 0,
       options: {
-        "Default option": "Default option value",
+        [DEFAULT_OPTION_TITLE]: DEFAULT_OPTION_VALUE,
       },
       inventory: [{ inventory_item_id: "", required_quantity: "" }],
       is_default: true,

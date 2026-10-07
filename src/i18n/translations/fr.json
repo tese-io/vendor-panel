@@ -3138,5 +3138,10 @@
       "documentUnavailable": "Impossible d'ouvrir le document",
       "loadFailed": "Impossible de charger l'état de votre vérification"
     }
+  },
+  "variantPricing": {
+    "currencies": "Devises à utiliser",
+    "currenciesHint": "N'ajoutez que les devises dans lesquelles vous vendez réellement — vous pourrez en ajouter à tout moment.",
+    "addCurrency": "Ajouter une devise"
   }
 }
