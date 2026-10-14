@@ -29,14 +29,31 @@ export const useSignUpWithEmailPass = (
     HttpTypes.AdminSignInWithEmailPassword & {
       confirmPassword: string
       name: string
+      // B-05 application capture — flows into the seller application so
+      // the reviewer sees a real company, and duplicate detection has a
+      // website to match on.
+      website?: string
+      company_type?: string
+      country_code?: string
     }
   >
 ) => {
   return useMutation({
-    mutationFn: (payload) => sdk.auth.register("seller", "emailpass", payload),
+    mutationFn: (payload) =>
+      sdk.auth.register("seller", "emailpass", {
+        email: payload.email,
+        password: payload.password,
+      }),
     onSuccess: async (_, variables) => {
       const seller = {
         name: variables.name,
+        ...(variables.website ? { website: variables.website } : {}),
+        ...(variables.company_type
+          ? { company_type: variables.company_type }
+          : {}),
+        ...(variables.country_code
+          ? { country_code: variables.country_code }
+          : {}),
         member: {
           name: variables.name,
           email: variables.email,

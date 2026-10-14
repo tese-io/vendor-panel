@@ -3,6 +3,7 @@ import { StoreVendor } from "../../../../../types/user"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { Pencil } from "@medusajs/icons"
 import { safeExternalHref } from "../../../../../lib/safe-url"
+import { getCountryByIso2 } from "../../../../../lib/data/countries"
 
 export const CompanySection = ({ seller }: { seller: StoreVendor }) => {
   return (
@@ -57,7 +58,13 @@ export const CompanySection = ({ seller }: { seller: StoreVendor }) => {
           Country
         </Text>
         <Text size="small" leading="compact">
-          {seller.country_code || "-"}
+          {/* The stored value is an ISO-2 code. Showing it raw put "mu"
+              on screen next to otherwise human-readable details, which
+              reads as a leaked internal field rather than a country.
+              Falls back to the code when it is one we do not carry. */}
+          {getCountryByIso2(seller.country_code)?.display_name ||
+            seller.country_code ||
+            "-"}
         </Text>
       </div>
       <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4">

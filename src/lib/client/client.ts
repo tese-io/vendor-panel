@@ -41,20 +41,32 @@ if (typeof window !== 'undefined') {
   (window as any).__sdk = sdk;
 }
 
-export const importProductsQuery = async (file: File) => {
+export const importProductsQuery = async (
+  file: File,
+  options?: { dryRun?: boolean }
+) => {
   const formData = new FormData();
   formData.append('file', file);
 
-  return await fetch(`${backendUrl}/vendor/products/import`, {
+  const qs = options?.dryRun ? '?dry_run=true' : '';
+  const res = await fetch(`${backendUrl}/vendor/products/import${qs}`, {
     method: 'POST',
     body: formData,
     headers: {
       authorization: `Bearer ${getAuthToken()}`,
       'x-publishable-api-key': publishableApiKey
     }
-  })
-    .then(res => res.json())
-    .catch(() => null);
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    // Used to swallow failures entirely (imports "succeeded" even on
+    // errors). Surface the server's message instead.
+    throw new Error(
+      json?.message || json?.error || `Import failed (${res.status})`
+    );
+  }
+  return json;
 };
 
 export const uploadFilesQuery = async (

@@ -4,7 +4,7 @@ export interface StaticCountry
   extends Required<Omit<HttpTypes.AdminRegionCountry, "id">> {}
 
 export function getCountryByIso2(
-  iso2: string | null
+  iso2: string | null | undefined
 ): StaticCountry | undefined {
   if (!iso2) {
     return

@@ -1,6 +1,7 @@
 import { Spinner } from "@medusajs/icons"
 import { Navigate, Outlet, useLocation } from "react-router-dom"
 import { useMe } from "../../../hooks/api/users"
+import { isPendingSellerError } from "../../../lib/is-pending-seller-error"
 import { SearchProvider } from "../../../providers/search-provider"
 import { SidebarProvider } from "../../../providers/sidebar-provider"
 import { MatrixProvider } from "../../../providers/matrix-provider"
@@ -18,6 +19,11 @@ export const ProtectedRoute = () => {
   }
 
   if (!seller) {
+    // B-05: an authenticated identity whose application is still under
+    // review gets a status page, not a raw error on the login screen.
+    if (isPendingSellerError(error)) {
+      return <Navigate to="/pending-approval" replace />
+    }
     return (
       <Navigate
         to={`/login${error?.message ? `?reason=${encodeURIComponent(error.message)}` : ""}`}

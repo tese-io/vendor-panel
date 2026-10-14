@@ -15,6 +15,7 @@ import {
   useCertificationCatalog,
   useRemoveSellerCertification,
   useSellerCertifications,
+  useSignedCertificationDocumentUrl,
   type CatalogCertification,
   type CertificationDocument,
   type SellerCertificationRow,
@@ -411,6 +412,37 @@ const AddCertificationRow = ({
   )
 }
 
+// Uploaded files open through a signed link (private bucket); pasted
+// registry links open as stored. Falls back to the stored URL while the
+// signed one is loading so the chip is never dead.
+const ProofChip = ({
+  rowId,
+  doc,
+  index,
+}: {
+  rowId: string
+  doc: CertificationDocument
+  index: number
+}) => {
+  const { data } = useSignedCertificationDocumentUrl(
+    rowId,
+    index,
+    doc.kind === "file"
+  )
+  return (
+    <a
+      href={data?.url || doc.url}
+      target="_blank"
+      rel="noreferrer noopener"
+      className="inline-flex items-center gap-1 rounded-md border border-ui-border-base bg-ui-bg-subtle px-2 py-0.5 text-[11px] text-ui-fg-interactive hover:bg-ui-bg-base-hover max-w-[220px]"
+      title={doc.filename || fileNameFromUrl(doc.url)}
+    >
+      <span aria-hidden>{doc.kind === "file" ? "📄" : "🔗"}</span>
+      <span className="truncate">{doc.filename || fileNameFromUrl(doc.url)}</span>
+    </a>
+  )
+}
+
 const CertificationRowItem = ({ row }: { row: SellerCertificationRow }) => {
   const remove = useRemoveSellerCertification({
     onSuccess: () => toast.success("Removed"),
@@ -443,19 +475,7 @@ const CertificationRowItem = ({ row }: { row: SellerCertificationRow }) => {
         {docs.length > 0 && (
           <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
             {docs.map((d, i) => (
-              <a
-                key={`${d.url}-${i}`}
-                href={d.url}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="inline-flex items-center gap-1 rounded-md border border-ui-border-base bg-ui-bg-subtle px-2 py-0.5 text-[11px] text-ui-fg-interactive hover:bg-ui-bg-base-hover max-w-[220px]"
-                title={d.url}
-              >
-                <span aria-hidden>{d.kind === "file" ? "📄" : "🔗"}</span>
-                <span className="truncate">
-                  {d.filename || fileNameFromUrl(d.url)}
-                </span>
-              </a>
+              <ProofChip key={`${d.url}-${i}`} rowId={row.id} doc={d} index={i} />
             ))}
           </div>
         )}

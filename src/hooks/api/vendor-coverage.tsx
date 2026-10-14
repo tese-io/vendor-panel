@@ -147,10 +147,14 @@ export const useAddSellerCoverage = (
         method: "POST",
         body: payload as Record<string, any>,
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: KEY })
-    },
     ...options,
+    // Compose, never let caller options REPLACE the invalidation — a
+    // toast-only onSuccess used to clobber it, leaving the declared
+    // list (and the wizard's Continue gate) stale until refocus.
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({ queryKey: KEY })
+      options?.onSuccess?.(data, variables, context)
+    },
   })
 }
 
@@ -166,9 +170,10 @@ export const useRemoveSellerCoverage = (
       fetchQuery(`/vendor/coverage/${encodeURIComponent(activityCode)}`, {
         method: "DELETE",
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: KEY })
-    },
     ...options,
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({ queryKey: KEY })
+      options?.onSuccess?.(data, variables, context)
+    },
   })
 }

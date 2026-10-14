@@ -1,4 +1,4 @@
-import { Heading } from "@medusajs/ui"
+import { Heading, Input } from "@medusajs/ui"
 import { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
@@ -158,6 +158,44 @@ export const ProductCreateOrganizationSection = ({
                     fetchNextPage={tags.fetchNextPage}
                   />
                 </Form.Control>
+                <Form.ErrorMessage />
+              </Form.Item>
+            )
+          }}
+        />
+      </div>
+
+      {/* Weight is the one shipping attribute that changes what a BUYER
+          sees: without it a recommendation card shows distance but no
+          delivery-emissions figure. The create flow had no field for it
+          at all — ProductCreateAttributeSection carries one but is
+          imported by no file — so a vendor could only add it by editing
+          the product afterwards, which most never will.
+
+          The unit is in the label deliberately. Medusa stores a bare
+          number as grams and our catalog sync follows that, so a vendor
+          thinking in kilograms produced a figure a thousand times too
+          small, with nothing on screen looking wrong. */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Form.Field
+          control={form.control}
+          name="weight"
+          render={({ field }) => {
+            return (
+              <Form.Item>
+                <Form.Label optional>
+                  {t("products.fields.weight.label")}
+                </Form.Label>
+                <Form.Control>
+                  <Input
+                    type="number"
+                    min={0}
+                    {...field}
+                    placeholder="12000"
+                    data-testid="product-create-weight"
+                  />
+                </Form.Control>
+                <Form.Hint>{t("products.fields.weight.hint")}</Form.Hint>
                 <Form.ErrorMessage />
               </Form.Item>
             )
